@@ -1,0 +1,73 @@
+/* mobile-menu.css */
+
+/* Navbar fixed at the top */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Ensure it stays above other content */
+  background-color: #cbb3e3; /* Match the navbar background color */
+  padding: 1rem 0;
+}
+
+/* Mobile menu styles */
+.mobile-menu {
+  display: none; /* Hide the mobile menu by default */
+}
+
+/* Show the mobile menu when the screen width is less than 768px */
+@media (max-width: 768px) {
+  .mobile-menu {
+    display: flex; /* Show the mobile menu */
+    flex-direction: column;
+    align-items: center;
+    background-color: #cbb3e3; /* Match the navbar background color */
+    padding: 1rem 0;
+    width: 100%;
+    position: absolute;
+    top: 100%; /* Position it below the navbar */
+    left: 0;
+    z-index: 10;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .mobile-menu a {
+    padding: 0.5rem 0;
+    color: #4a5568; /* Default text color */
+    font-size: 1.1rem;
+    text-decoration: none;
+  }
+
+  .mobile-menu a:hover {
+    color: #805ad5; /* Hover color */
+  }
+
+  .mobile-menu a.active {
+    color: #6b46c1; /* Active link color */
+    font-weight: 600;
+  }
+
+  /* Styles for the cart and Instagram icons in mobile view */
+  .navbar .icons-container {
+    position: static; /* Reset absolute positioning */
+    transform: none; /* Reset transform */
+    display: flex;
+    align-items: center; /* Center the icons vertically */
+    gap: 1rem; /* Space between icons */
+    margin-left: auto; /* Push the icons to the right */
+    margin-bottom: 10;
+  }
+}
+
+/* Desktop view styles */
+@media (min-width: 769px) {
+  .navbar .icons-container {
+    display: flex;
+    align-items: center; /* Center the icons vertically */
+    gap: 1rem; /* Space between icons */
+    position: static; /* Reset absolute positioning */
+    transform: none; 
+    margin-left: auto;/* Reset transform */
+  }
+}
