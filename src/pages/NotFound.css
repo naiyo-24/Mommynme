@@ -1,0 +1,140 @@
+/* src/pages/NotFound.css */
+.page_404 {
+    padding: 2rem 1rem;
+    background: #fff;
+    font-family: 'Arvo', serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 15px;
+    margin: 0 auto;
+  }
+  
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+  }
+  
+  .col-sm-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding: 0 15px;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  
+  .four_zero_four_bg {
+    background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+    height: 60vmin;
+    max-height: 400px;
+    min-height: 200px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: relative;
+    margin: 0 auto 2rem;
+  }
+  
+  .four_zero_four_bg h1 {
+    font-size: clamp(3rem, 10vw, 5rem);
+    color: #bd46e5;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    margin: 0;
+    position: absolute;
+    bottom: -0.5rem;
+    width: 100%;
+  }
+  
+  .contant_box_404 {
+    margin-top: 1rem;
+    text-align: center;
+    padding: 0 1rem;
+  }
+  
+  .contant_box_404 h3 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    color: #bd46e5;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  
+  .contant_box_404 p {
+    color: #6b7280;
+    font-size: clamp(1rem, 3vw, 1.125rem);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+  
+  .link_404 {
+    color: #ffffff !important;
+    padding: 0.75rem 2rem;
+    background: #bd46e5;
+    margin: 1rem 0;
+    display: inline-block;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(166, 46, 218, 0.2);
+    border: 2px solid transparent;
+  }
+  
+  .link_404:hover {
+    background: #952abc;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(79, 70, 229, 0.3);
+  }
+  
+  /* Responsive adjustments */
+  @media (min-width: 576px) {
+    .col-sm-10 {
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+      margin: 0 auto;
+    }
+    
+    .four_zero_four_bg {
+      height: 50vmin;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .page_404 {
+      padding: 3rem 1rem;
+    }
+    
+    .four_zero_four_bg {
+      margin-bottom: 3rem;
+      height: 45vmin;
+    }
+    
+    .contant_box_404 {
+      margin-top: 0;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .four_zero_four_bg {
+      height: 40vmin;
+    }
+  }
+  
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .link_404 {
+      transition: none;
+    }
+    
+    .link_404:hover {
+      transform: none;
+    }
+  }
