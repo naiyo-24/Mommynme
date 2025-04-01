@@ -5,9 +5,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { supabase } from "../utils/supabaseClient";
 import { CartContext } from "../components/CartContext";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShoppingCart, ChevronRight } from "lucide-react";
+import { MediaCoverageSection } from "../components/MediaCoverageSection";
+import { BrandCollaborationSection } from "../components/BrandCollaborationSection";
 
-// Define types for your data
 interface Poster {
   id: string;
   title: string;
@@ -26,9 +27,9 @@ interface BestSeller {
   image2: string;
   image3: string;
   offer: string;
-  category: string; // Added to match Product type
-  created_at: string; // Added to match Product type
-  quantity: number; // Added to match Product type
+  category: string;
+  created_at: string;
+  quantity: number;
 }
 
 interface Product {
@@ -44,13 +45,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch data from Supabase
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // Fetch poster data
         const { data: posterData, error: posterError } = await supabase
           .from("poster")
           .select("*")
@@ -58,13 +57,11 @@ export default function Home() {
         if (posterError) throw posterError;
         setPoster(posterData);
 
-        // Fetch best sellers
         const { data: bestSellersData, error: bestSellersError } =
           await supabase.from("best_seller").select("*");
         if (bestSellersError) throw bestSellersError;
         setBestSellers(bestSellersData || []);
 
-        // Fetch categories
         const { data: categoriesData, error: categoriesError } = await supabase
           .from("products")
           .select("id, category, image")
@@ -81,39 +78,33 @@ export default function Home() {
     fetchData();
   }, []);
 
-  // Function to handle "Add to Cart"
   const cartContext = useContext(CartContext);
-
   if (!cartContext) {
     throw new Error("CartContext must be used within a CartProvider");
   }
-
   const { addToCart } = cartContext;
 
-  // Function to handle category click
   const handleCategoryClick = (category: string) => {
     navigate(`/products?category=${encodeURIComponent(category)}`);
   };
 
-  // Function to calculate discounted price
   const calculateDiscountedPrice = (price: number, offer: string) => {
     if (!offer) return price;
     const discount = parseFloat(offer) / 100;
     return price - price * discount;
   };
 
-  // Slider settings for poster images
   const posterSliderSettings = {
     dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true, // Enable automatic sliding
-    autoplaySpeed: 3000, // Slide every 3 seconds
+    autoplay: true,
+    autoplaySpeed: 5000,
     pauseOnHover: true,
     arrows: false,
-    fade: true, // Add fade transition for smoother slides
+    fade: true,
   };
 
   if (loading) {
@@ -126,120 +117,142 @@ export default function Home() {
 
   return (
     <div className="bg-gray-50">
-      {/* Poster Section - Only Images */}
+      {/* Hero Slider Section */}
       {poster && (
         <section className="relative h-[70vh] md:h-screen">
-          {/* Slider for Images */}
           <Slider {...posterSliderSettings}>
             {[poster.image_url, poster.image2, poster.image3].map(
-              (image, index) => {
-                console.log(`Rendering image ${index + 1}: ${image}`);
-                return (
-                  <div key={index} className="w-full h-[70vh] md:h-screen">
-                    <img
-                      src={image}
-                      alt={`Poster Image ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        console.error(`Failed to load image: ${image}`);
-                        e.currentTarget.src = "https://placehold.co/600x400"; // Fallback image
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-black/40" />
-                  </div>
-                );
-              }
+              (image, index) => (
+                <div key={index} className="w-full h-[70vh] md:h-screen">
+                  <img
+                    src={image}
+                    alt={`Poster ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://placehold.co/600x400";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/40" />
+                </div>
+              )
             )}
           </Slider>
 
-          {/* Static Title and Description */}
-          <div className="absolute inset-0 flex items-center justify-center text-center z-10">
+          <div className="absolute inset-0 flex items-center justify-center text-center z-10 px-4">
             <div className="max-w-2xl">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-poppins text-white mb-4 md:mb-6">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 md:mb-6">
                 {poster.title}
               </h1>
-              <p className="text-lg sm:text-xl font-title1 text-white/90 mb-6 md:mb-8">
+              <p className="text-lg sm:text-xl text-white/90 mb-6 md:mb-8">
                 {poster.description}
               </p>
               <Link
                 to="/products"
-                className="inline-flex bg-pink-600 font-poppins text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold items-center space-x-2 hover:bg-pink-700 transition-all duration-300 hover:scale-105"
+                className="inline-flex bg-pink-600 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold items-center space-x-2 hover:bg-pink-700 transition-all duration-300 hover:scale-105"
               >
                 <span>Shop Now</span>
-                <ArrowRight className="w-5 h-5 animate-[bounce-x_1s_ease-in-out_infinite]" />
+                <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </div>
         </section>
       )}
 
-      {/* Best Seller Section */}
-      <section className="py-12 md:py-20">
+      {/* Trust Badges Section */}
+      <div className="bg-white py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8 md:mb-16">
-            Best Sellers
-          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div className="p-4">
+              <div className="text-2xl font-bold text-pink-600">100%</div>
+              <div className="text-sm text-gray-600">Handmade</div>
+            </div>
+            <div className="p-4">
+              <div className="text-2xl font-bold text-pink-600">500+</div>
+              <div className="text-sm text-gray-600">Happy Customers</div>
+            </div>
+            <div className="p-4">
+              <div className="text-2xl font-bold text-pink-600">Free</div>
+              <div className="text-sm text-gray-600">Shipping Over ₹999</div>
+            </div>
+            <div className="p-4">
+              <div className="text-2xl font-bold text-pink-600">Easy</div>
+              <div className="text-sm text-gray-600">Returns</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Best Sellers Section */}
+      <section className="py-12 md:py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl sm:text-4xl font-bold">Best Sellers</h2>
+            <Link
+              to="/products"
+              className="flex items-center text-pink-600 hover:text-pink-800"
+            >
+              View All <ChevronRight className="ml-1" />
+            </Link>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {bestSellers.length > 0 ? (
-              bestSellers.map((product) => {
-                const discountedPrice = calculateDiscountedPrice(
-                  product.price,
-                  product.offer
-                );
-                return (
-                  <div
-                    key={product.id}
-                    className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
-                  >
+            {bestSellers.map((product) => {
+              const discountedPrice = calculateDiscountedPrice(
+                product.price,
+                product.offer
+              );
+
+              return (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                >
+                  <div className="relative overflow-hidden">
                     <img
                       src={product.image_url}
                       alt={product.title}
-                      className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="p-6">
-                      <h3 className="text-xl font-semibold mb-2">
-                        {product.title}
-                      </h3>
-                      <p className="text-pink-600 font-bold">
-                        ₹{discountedPrice.toFixed(2)}{" "}
-                        {product.offer && (
-                          <span className="text-gray-500 line-through">
-                            ₹{product.price.toFixed(2)}
-                          </span>
-                        )}
-                      </p>
-                      {product.offer && (
-                        <p className="text-sm text-green-600 mb-2">
-                          {product.offer}% off
-                        </p>
-                      )}
-                      <button
-                        onClick={() =>
-                          addToCart({
-                            id: product.id,
-                            name: product.title, // Map `title` to `name`
-                            price: product.price,
-                            description: product.description,
-                            image: product.image_url, // Map `image_url` to `image`
-                            category: product.category,
-                            created_at: new Date().toISOString(), // Add a default value
-                            quantity: 1, // Add a default value
-                            offer: product.offer,
-                          })
-                        }
-                        className="mt-4 w-full bg-pink-600 text-white py-2 rounded-md hover:bg-pink-700 transition-all duration-300 hover:scale-105"
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
+                    {product.offer && (
+                      <div className="absolute top-4 right-4 bg-pink-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        {product.offer}% OFF
+                      </div>
+                    )}
                   </div>
-                );
-              })
-            ) : (
-              <p className="text-center col-span-full">
-                No best sellers found.
-              </p>
-            )}
+
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold mb-2 line-clamp-1">
+                      {product.title}
+                    </h3>
+
+                    <div className="flex items-center mb-4">
+                      <span className="text-lg font-bold text-pink-600">
+                        ₹{discountedPrice.toFixed(2)}
+                      </span>
+                      {product.offer && (
+                        <span className="text-sm text-gray-500 line-through ml-2">
+                          ₹{product.price.toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() =>
+                        addToCart({
+                          ...product,
+                          name: product.title,
+                          image: product.image_url,
+                        })
+                      }
+                      className="w-full flex items-center justify-center bg-pink-600 text-white py-2 rounded-md hover:bg-pink-700 transition-colors"
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -247,37 +260,45 @@ export default function Home() {
       {/* Shop by Category Section */}
       <section className="py-12 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8 md:mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8 md:mb-12">
             Shop by Category
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-            {categories.length > 0 ? (
-              categories.map((category) => (
-                <div
-                  key={category.id}
-                  className="text-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
-                  onClick={() => handleCategoryClick(category.category)}
-                >
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+            {categories.map((category) => (
+              <div
+                key={category.id}
+                className="group cursor-pointer"
+                onClick={() => handleCategoryClick(category.category)}
+              >
+                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3">
                   {category.image ? (
                     <img
                       src={category.image}
                       alt={category.category}
-                      className="w-full h-32 object-cover rounded-lg mb-4"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="w-full h-32 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
                       <span className="text-gray-500">No Image</span>
                     </div>
                   )}
-                  <h3 className="text-xl font-semibold">{category.category}</h3>
                 </div>
-              ))
-            ) : (
-              <p className="text-center col-span-full">No categories found.</p>
-            )}
+                <h3 className="text-lg font-medium text-center group-hover:text-pink-600">
+                  {category.category}
+                </h3>
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* Media Coverage Section */}
+      <MediaCoverageSection />
+
+      <BrandCollaborationSection />
+
+      {/* Testimonial Section (Optional) */}
+      {/* Add your testimonial section here if needed */}
     </div>
   );
 }
