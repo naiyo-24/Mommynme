@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../utils/supabaseClient';
 import { User, ShoppingBag, Gift, Heart, ChevronRight, LogOut, Edit } from 'lucide-react';
 
 interface Order {
@@ -59,50 +58,71 @@ const ProfilePage: React.FC = () => {
     }
   ];
 
+  // Example user data
+  const exampleUserProfile: UserProfile = {
+    name: "Crochet Enthusiast",
+    email: "user@example.com",
+    joinDate: new Date().toLocaleDateString(),
+    favoriteYarn: "Merino Wool",
+    crochetSkill: "Intermediate"
+  };
+
+  // Example orders data
+  const exampleOrders: Order[] = [
+    {
+      id: "ORD-78945",
+      date: "Nov 15, 2023",
+      items: [
+        { 
+          name: "Chunky Wool Yarn Bundle", 
+          quantity: 2, 
+          price: 24.99, 
+          image: "https://images.unsplash.com/photo-1618354691373-d8514fecafcb" 
+        },
+        { 
+          name: "Premium Crochet Hook Set", 
+          quantity: 1, 
+          price: 18.50, 
+          image: "https://images.unsplash.com/photo-1604176354204-9268737828e4" 
+        }
+      ],
+      total: 68.48,
+      status: "Delivered"
+    },
+    {
+      id: "ORD-78123",
+      date: "Dec 3, 2023",
+      items: [
+        { 
+          name: "Winter Scarf Pattern Kit", 
+          quantity: 1, 
+          price: 32.99, 
+          image: "https://images.unsplash.com/photo-1511192336575-5a79af67b614" 
+        }
+      ],
+      total: 32.99,
+      status: "Shipped"
+    }
+  ];
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Fetch user data from Supabase
-        const { data: { user } } = await supabase.auth.getUser();
+        // In a real app, you would fetch user data from your backend API here
+        // Example:
+        // const response = await fetch('/api/user');
+        // const userData = await response.json();
+        // setUserProfile(userData);
         
-        if (user) {
-          // Set user profile (in a real app, you'd fetch this from your database)
-          setUserProfile({
-            name: user.user_metadata?.full_name || "Crochet Enthusiast",
-            email: user.email || "",
-            joinDate: new Date(user.created_at).toLocaleDateString(),
-            favoriteYarn: "Merino Wool",
-            crochetSkill: "Intermediate"
-          });
-
-          // Fetch orders (sample data - replace with actual API call)
-          const sampleOrders: Order[] = [
-            {
-              id: "ORD-78945",
-              date: "Nov 15, 2023",
-              items: [
-                { name: "Chunky Wool Yarn Bundle", quantity: 2, price: 24.99, image: "/yarn-bundle.jpg" },
-                { name: "Premium Crochet Hook Set", quantity: 1, price: 18.50, image: "/hooks.jpg" }
-              ],
-              total: 68.48,
-              status: "Delivered"
-            },
-            {
-              id: "ORD-78123",
-              date: "Dec 3, 2023",
-              items: [
-                { name: "Winter Scarf Pattern Kit", quantity: 1, price: 32.99, image: "/scarf-kit.jpg" }
-              ],
-              total: 32.99,
-              status: "Shipped"
-            }
-          ];
-          setOrders(sampleOrders);
-        } else {
-          navigate('/login');
-        }
+        // For now, using example data
+        setUserProfile(exampleUserProfile);
+        setOrders(exampleOrders);
+        
       } catch (error) {
         console.error("Error fetching user data:", error);
+        // Fallback to example data if API fails
+        setUserProfile(exampleUserProfile);
+        setOrders(exampleOrders);
       } finally {
         setLoading(false);
       }
@@ -112,7 +132,11 @@ const ProfilePage: React.FC = () => {
   }, [navigate]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    // In a real app, you would call your logout API endpoint
+    // Example:
+    // await fetch('/api/logout', { method: 'POST' });
+    
+    // For now, just navigate to login
     navigate('/login');
   };
 
@@ -217,7 +241,14 @@ const ProfilePage: React.FC = () => {
                         {order.items.map((item, index) => (
                           <div key={index} className="flex items-center">
                             <div className="w-16 h-16 bg-purple-100 rounded-lg mr-4 overflow-hidden">
-                              <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                              <img 
+                                src={item.image} 
+                                alt={item.name} 
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = 'https://placehold.co/600x400';
+                                }}
+                              />
                             </div>
                             <div className="flex-1">
                               <h4 className="font-medium">{item.name}</h4>
@@ -271,7 +302,10 @@ const ProfilePage: React.FC = () => {
                       <span className="font-medium">Valid until:</span> {offer.validUntil}
                     </p>
                     
-                    <button className="mt-4 w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
+                    <button 
+                      onClick={() => navigate('/products')}
+                      className="mt-4 w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                    >
                       Shop Now
                     </button>
                   </div>
@@ -330,7 +364,10 @@ const ProfilePage: React.FC = () => {
                     </div>
                   </div>
                   
-                  <button className="mt-6 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
+                  <button 
+                    onClick={() => alert('Update preferences functionality would go here')}
+                    className="mt-6 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                  >
                     Update Preferences
                   </button>
                 </div>
