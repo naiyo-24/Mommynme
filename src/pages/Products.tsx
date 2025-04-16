@@ -1,6 +1,5 @@
 import { useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { Filter, Search } from "lucide-react";
-import { supabase } from "../utils/supabaseClient";
 import { CartContext } from "../components/CartContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -24,7 +23,7 @@ interface Product {
   created_at: string;
   offer?: string;
   quantity: number;
-  images?: string[];
+  images?: string[];  // Make elements non-optional if you prefer
   colors?: string[];
 }
 
@@ -63,24 +62,107 @@ export default function Products() {
     "Gray": "#808080"
   };
 
+  // Example product data - replace this with your API call
+  const exampleProducts: Product[] = [
+    {
+      id: "1",
+      name: "Premium Wireless Headphones",
+      price: 199.99,
+      category: "Electronics",
+      description: "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
+      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
+      img2: "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
+      img3: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df",
+      created_at: "2023-10-15",
+      offer: "15",
+      quantity: 10,
+      colors: ["Black", "Blue", "White"]
+    },
+    {
+      id: "2",
+      name: "Organic Cotton T-Shirt",
+      price: 29.99,
+      category: "Clothing",
+      description: "Comfortable and eco-friendly t-shirt made from 100% organic cotton.",
+      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27",
+      img2: "https://images.unsplash.com/photo-1527719327859-c6ce80353573",
+      created_at: "2023-11-20",
+      quantity: 25,
+      colors: ["White", "Gray", "Red"]
+    },
+    {
+      id: "3",
+      name: "Stainless Steel Water Bottle",
+      price: 24.95,
+      category: "Accessories",
+      description: "Durable 1L stainless steel water bottle that keeps drinks cold for 24 hours.",
+      image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8",
+      created_at: "2023-09-05",
+      offer: "10",
+      quantity: 15,
+      colors: ["Silver", "Black"]
+    },
+    {
+      id: "4",
+      name: "Smart Fitness Tracker",
+      price: 79.99,
+      category: "Electronics",
+      description: "Track your steps, heart rate, sleep patterns and more with this advanced fitness tracker.",
+      image: "https://images.unsplash.com/photo-1551645120-d70bfe84c826",
+      img2: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49",
+      created_at: "2023-12-01",
+      quantity: 8,
+      colors: ["Black", "Pink"]
+    },
+    {
+      id: "5",
+      name: "Leather Wallet",
+      price: 49.99,
+      category: "Accessories",
+      description: "Genuine leather wallet with multiple card slots and cash compartment.",
+      image: "https://images.unsplash.com/photo-1591561954555-607968c989ab",
+      created_at: "2023-08-12",
+      quantity: 0, // Out of stock
+      colors: ["Brown", "Black"]
+    },
+    {
+      id: "6",
+      name: "Wireless Charging Pad",
+      price: 34.99,
+      category: "Electronics",
+      description: "Fast wireless charging pad compatible with all Qi-enabled devices.",
+      image: "https://images.unsplash.com/photo-1587034861059-51a6f187a1be",
+      created_at: "2023-11-15",
+      offer: "20",
+      quantity: 12
+    }
+  ];
+
   useEffect(() => {
+    // Replace this with your actual API call
     const fetchProducts = async () => {
       try {
-        const { data: productsData, error } = await supabase
-          .from("products")
-          .select("*");
-
-        if (error) throw error;
-
-        const productsWithData = productsData.map(product => ({
+        // Replace this with your actual API call
+        const response = await fetch('your-api-endpoint/products');
+        const productsData: Product[] = await response.json();
+        
+        const productsWithData = productsData.map((product) => ({
           ...product,
-          images: [product.img2, product.img3].filter(Boolean),
+          // Use type assertion if you're sure the filter removes all undefined/null
+          images: [product.img2, product.img3].filter((img): img is string => !!img),
           colors: product.colors || getRandomColors()
         }));
-
+    
         setProducts(productsWithData);
       } catch (error) {
         console.error("Error fetching products:", error);
+        // Fallback to example data if API fails
+        const fallbackProducts = exampleProducts.map(p => ({
+          ...p,
+          images: [p.img2, p.img3].filter((img): img is string => !!img),
+          colors: p.colors || getRandomColors()
+        }));
+        setProducts(fallbackProducts);
       }
     };
 

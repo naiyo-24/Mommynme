@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../utils/supabaseClient';
 
 interface Product {
   id: string;
@@ -11,21 +10,21 @@ interface Product {
   created_at: string;
   offer?: string;
   quantity: number;
-  colors?: string[]; // Add colors to Product interface
+  colors?: string[];
 }
 
 interface CartItem extends Product {
   quantity: number;
-  selectedColor?: string; // Add selectedColor to CartItem
+  selectedColor?: string;
 }
 
 interface CartContextType {
   cartItems: CartItem[];
   loading: boolean;
-  addToCart: (product: Product, selectedColor?: string) => void; // Update to include color
+  addToCart: (product: Product, selectedColor?: string) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
-  updateColor: (id: string, color: string) => void; // Add method to update color
+  updateColor: (id: string, color: string) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -38,30 +37,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCart = async () => {
+    // Load cart from local storage
+    const fetchCart = () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (user) {
-          const { data, error } = await supabase
-            .from('carts')
-            .select('items')
-            .eq('user_id', user.id)
-            .single();
-
-          if (error && error.code !== 'PGRST116') {
-            console.error('Error fetching cart:', error);
-          } else {
-            setCartItems(data?.items || []);
-          }
-        } else {
-          const savedCart = localStorage.getItem('cartItems');
-          if (savedCart) {
-            setCartItems(JSON.parse(savedCart));
-          }
+        const savedCart = localStorage.getItem('cartItems');
+        if (savedCart) {
+          setCartItems(JSON.parse(savedCart));
         }
       } catch (error) {
-        console.error('Error fetching cart:', error);
+        console.error('Error loading cart:', error);
       } finally {
         setLoading(false);
       }
@@ -71,27 +55,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
+    // Save cart to local storage whenever it changes
     if (!loading) {
-      const saveCart = async () => {
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-
-          if (user) {
-            await supabase
-              .from('carts')
-              .upsert(
-                { user_id: user.id, items: cartItems },
-                { onConflict: 'user_id' }
-              );
-          } else {
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
-          }
-        } catch (error) {
-          console.error('Error saving cart:', error);
-        }
-      };
-
-      saveCart();
+      try {
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      } catch (error) {
+        console.error('Error saving cart:', error);
+      }
     }
   }, [cartItems, loading]);
 
@@ -140,7 +110,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cartItems.reduce((total, item) => {
+      // Calculate discounted price if there's an offer
+      const price = item.offer 
+        ? item.price - (item.price * (parseFloat(item.offer) / 100))
+        : item.price;
+      return total + price * item.quantity;
+    }, 0);
   };
 
   return (

@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { supabase } from "../utils/supabaseClient";
 import { CartContext } from "../components/CartContext";
 import { ArrowRight, ShoppingCart, ChevronRight } from "lucide-react";
 import { MediaCoverageSection } from "../components/MediaCoverageSection";
@@ -45,31 +44,121 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Example data to replace Supabase calls
+  const examplePoster: Poster = {
+    id: "1",
+    title: "Summer Collection 2023",
+    description: "Discover our new summer collection with exclusive designs",
+    image_url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b",
+    image2: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b",
+    image3: "https://images.unsplash.com/photo-1483985988355-763728e1935b"
+  };
+
+  const exampleBestSellers: BestSeller[] = [
+    {
+      id: "1",
+      title: "Premium Yoga Mat",
+      description: "Eco-friendly yoga mat with perfect grip",
+      price: 2499,
+      image_url: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f",
+      image2: "https://images.unsplash.com/photo-1545205597-3d9d02c29597",
+      image3: "https://images.unsplash.com/photo-1593757147298-e064ed1419e5",
+      offer: "15",
+      category: "Fitness",
+      created_at: "2023-06-15",
+      quantity: 20
+    },
+    {
+      id: "2",
+      title: "Wireless Earbuds",
+      description: "Crystal clear sound with noise cancellation",
+      price: 1799,
+      image_url: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df",
+      image2: "https://images.unsplash.com/photo-1593784991095-a205069470b6",
+      image3: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb",
+      offer: "10",
+      category: "Electronics",
+      created_at: "2023-07-10",
+      quantity: 15
+    },
+    {
+      id: "3",
+      title: "Organic Cotton T-Shirt",
+      description: "100% organic cotton, comfortable fit",
+      price: 899,
+      image_url: "https://images.unsplash.com/photo-1576566588028-4147f3842f27",
+      image2: "https://images.unsplash.com/photo-1527719327859-c6ce80353573",
+      image3: "",
+      category: "Clothing",
+      created_at: "2023-05-22",
+      quantity: 30,
+      offer: ""
+    },
+    {
+      id: "4",
+      title: "Stainless Steel Water Bottle",
+      description: "Keeps drinks cold for 24 hours",
+      price: 649,
+      image_url: "https://images.unsplash.com/photo-1602143407151-7111542de6e8",
+      image2: "https://images.unsplash.com/photo-1600166898405-da9535204843",
+      image3: "https://images.unsplash.com/photo-1600267165477-6d4cc741b379",
+      offer: "20",
+      category: "Accessories",
+      created_at: "2023-08-05",
+      quantity: 25
+    }
+  ];
+
+  const exampleCategories: Product[] = [
+    {
+      id: "1",
+      category: "Electronics",
+      image: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df"
+    },
+    {
+      id: "2",
+      category: "Clothing",
+      image: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f"
+    },
+    {
+      id: "3",
+      category: "Home & Living",
+      image: "https://images.unsplash.com/photo-1513694203232-719a280e022f"
+    },
+    {
+      id: "4",
+      category: "Fitness",
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"
+    },
+    {
+      id: "5",
+      category: "Accessories",
+      image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7"
+    }
+  ];
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
-        const { data: posterData, error: posterError } = await supabase
-          .from("poster")
-          .select("*")
-          .single();
-        if (posterError) throw posterError;
-        setPoster(posterData);
-
-        const { data: bestSellersData, error: bestSellersError } =
-          await supabase.from("best_seller").select("*");
-        if (bestSellersError) throw bestSellersError;
-        setBestSellers(bestSellersData || []);
-
-        const { data: categoriesData, error: categoriesError } = await supabase
-          .from("products")
-          .select("id, category, image")
-          .neq("category", null);
-        if (categoriesError) throw categoriesError;
-        setCategories(categoriesData || []);
+        
+        // Replace these with your actual API calls
+        // Example:
+        // const posterResponse = await fetch('your-api-endpoint/poster');
+        // const posterData = await posterResponse.json();
+        // setPoster(posterData);
+        
+        // Using example data for now
+        setPoster(examplePoster);
+        setBestSellers(exampleBestSellers);
+        setCategories(exampleCategories);
+        
       } catch (error) {
         console.error("Error fetching data:", error);
+        // Fallback to example data if API fails
+        setPoster(examplePoster);
+        setBestSellers(exampleBestSellers);
+        setCategories(exampleCategories);
       } finally {
         setLoading(false);
       }
@@ -121,8 +210,9 @@ export default function Home() {
       {poster && (
         <section className="relative h-[70vh] md:h-screen">
           <Slider {...posterSliderSettings}>
-            {[poster.image_url, poster.image2, poster.image3].map(
-              (image, index) => (
+            {[poster.image_url, poster.image2, poster.image3]
+              .filter(img => img) // Filter out empty strings
+              .map((image, index) => (
                 <div key={index} className="w-full h-[70vh] md:h-screen">
                   <img
                     src={image}
@@ -212,6 +302,9 @@ export default function Home() {
                       src={product.image_url}
                       alt={product.title}
                       className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://placehold.co/600x400";
+                      }}
                     />
                     {product.offer && (
                       <div className="absolute top-4 right-4 bg-pink-600 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -276,6 +369,9 @@ export default function Home() {
                       src={category.image}
                       alt={category.category}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://placehold.co/600x400";
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gray-200">
@@ -296,9 +392,6 @@ export default function Home() {
       <MediaCoverageSection />
 
       <BrandCollaborationSection />
-
-      {/* Testimonial Section (Optional) */}
-      {/* Add your testimonial section here if needed */}
     </div>
   );
 }
