@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../utils/supabaseClient";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 
 interface FormState {
@@ -29,30 +28,43 @@ const LoginSignupPage: React.FC = () => {
     setFormState({ ...formState, error: "", loading: true });
 
     try {
+      // Replace with your authentication API calls
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        // Example login API call:
+        // const response = await fetch('/api/auth/login', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ email, password })
+        // });
+        // const data = await response.json();
+        // if (!response.ok) throw new Error(data.message);
+        
+        // For demo purposes, simulate successful login
+        console.log("Login attempt with:", { email, password });
         navigate("/");
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        alert("Signup successful! Check your email for confirmation.");
+        // Example signup API call:
+        // const response = await fetch('/api/auth/signup', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ email, password })
+        // });
+        // const data = await response.json();
+        // if (!response.ok) throw new Error(data.message);
+        
+        // For demo purposes, simulate successful signup
+        console.log("Signup attempt with:", { email, password });
+        alert("Signup successful! Please check your email for confirmation.");
         navigate("/");
       }
     } catch (error: any) {
-      setFormState({ ...formState, error: error.message, loading: false });
+      setFormState({ 
+        ...formState, 
+        error: error.message || "Authentication failed. Please try again.",
+        loading: false 
+      });
     }
   };
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        console.log("User is logged in:", session.user);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 flex items-center justify-center p-4">
@@ -100,6 +112,7 @@ const LoginSignupPage: React.FC = () => {
                 className="w-full px-4 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent pr-10"
                 placeholder="••••••••"
                 required
+                minLength={6}
               />
               <button
                 type="button"
