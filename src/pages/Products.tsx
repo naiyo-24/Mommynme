@@ -65,9 +65,17 @@ export default function Products() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('https://frappe-client1.sirfbill.com/api/resource/Item?fields=["*"]');
+        const response = await fetch('https://frappe-client1.sirfbill.com/api/resource/Item?fields=["*"]', {
+          method: 'GET',
+          headers: {
+            "Authorization": "token 37505715c181575:bfd8e5d121bcf82",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        });
+  
         const data = await response.json();
-
+  
         const productsData: Product[] = data.data.map((item: any) => ({
           id: item.item_code,
           name: item.item_name,
@@ -76,19 +84,20 @@ export default function Products() {
           description: item.description,
           image: item.image,
           created_at: item.creation,
-          quantity: item.opening_stock,
-          colors: [], // Assuming no color data in API response
-          images: [] // Assuming no additional images in API response
+          quantity: item.opening_stock || 0,
+          colors: [], // Placeholder
+          images: []  // Placeholder
         }));
-
+  
         setProducts(productsData);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
-
+  
     fetchProducts();
   }, []);
+  
 
   useEffect(() => {
     if (categoryFromQuery) {
