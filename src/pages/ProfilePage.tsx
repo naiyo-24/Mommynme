@@ -24,11 +24,49 @@ interface UserProfile {
 }
 
 const ProfilePage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'orders' | 'offers' | 'profile'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'offers' | 'profile'>('profile');
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const navigate = useNavigate();
+
+  // Check if user is logged in and fetch profile data from localStorage
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    
+    if (!isLoggedIn) {
+      // If not logged in, redirect to login page
+      navigate("/login");
+      return;
+    }
+
+    try {
+      // Get customer data from localStorage
+      const customerProfileStr = localStorage.getItem("customerProfile");
+      
+      if (customerProfileStr) {
+        const customerData = JSON.parse(customerProfileStr);
+        
+        // Map Frappe API customer data to our UserProfile interface
+        setUserProfile({
+          name: customerData.customer_name || 'User',
+          email: customerData.email_id || '',
+          joinDate: new Date(customerData.creation).toLocaleDateString() || 'Recent',
+          favoriteYarn: 'Not specified',
+          crochetSkill: 'Beginner'
+        });
+      } else {
+        console.error('No customer profile data found in localStorage');
+      }
+    } catch (error) {
+      console.error('Error loading profile data:', error);
+    }
+
+    // Load sample orders (this could be replaced with an API call later)
+    setOrders(sampleOrders);
+    setLoading(false);
+  }, [navigate]);
 
   // Sample offers data
   const offers = [
@@ -58,17 +96,8 @@ const ProfilePage: React.FC = () => {
     }
   ];
 
-  // Example user data
-  const exampleUserProfile: UserProfile = {
-    name: "Crochet Enthusiast",
-    email: "user@example.com",
-    joinDate: new Date().toLocaleDateString(),
-    favoriteYarn: "Merino Wool",
-    crochetSkill: "Intermediate"
-  };
-
-  // Example orders data
-  const exampleOrders: Order[] = [
+  // Sample orders data - this would be replaced by real orders from an API
+  const sampleOrders: Order[] = [
     {
       id: "ORD-78945",
       date: "Nov 15, 2023",
@@ -105,38 +134,12 @@ const ProfilePage: React.FC = () => {
     }
   ];
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // In a real app, you would fetch user data from your backend API here
-        // Example:
-        // const response = await fetch('/api/user');
-        // const userData = await response.json();
-        // setUserProfile(userData);
-        
-        // For now, using example data
-        setUserProfile(exampleUserProfile);
-        setOrders(exampleOrders);
-        
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        // Fallback to example data if API fails
-        setUserProfile(exampleUserProfile);
-        setOrders(exampleOrders);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    // In a real app, you would call your logout API endpoint
-    // Example:
-    // await fetch('/api/logout', { method: 'POST' });
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem("customerProfile");
+    localStorage.removeItem("isLoggedIn");
     
-    // For now, just navigate to login
+    // Navigate to login page
     navigate('/login');
   };
 

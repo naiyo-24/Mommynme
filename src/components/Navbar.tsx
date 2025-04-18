@@ -1,9 +1,8 @@
-import { useContext, useState, useMemo, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useContext, useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
 import icon from '../assets/images/icon.png';
 import { ShoppingCart, Instagram, Menu, X, User, LogOut } from 'lucide-react';
 import { CartContext } from './CartContext';
-import { supabase } from '../utils/supabaseClient';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Home' },
@@ -12,13 +11,11 @@ const NAV_ITEMS = [
   { path: '/contact', label: 'Contact' },
 ] as const;
 
-export default function Navbar() {
+const Navbar: React.FC = () => {
   const cartContext = useContext(CartContext);
   const location = useLocation();
-  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const cartItemsCount = useMemo(
     () => cartContext?.cartItems?.length ?? 0,
@@ -26,23 +23,34 @@ export default function Navbar() {
   );
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
-      setLoading(false);
+    const loggedInFlag = localStorage.getItem("isLoggedIn");
+    setIsLoggedIn(loggedInFlag === "true");
+    
+    // Add event listener to detect changes in localStorage
+    const handleStorageChange = () => {
+      const updatedLoggedInFlag = localStorage.getItem("isLoggedIn");
+      setIsLoggedIn(updatedLoggedInFlag === "true");
     };
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsLoggedIn(!!session?.user);
-    });
-
-    return () => subscription.unsubscribe();
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Check login status regularly (every 2 seconds)
+    const checkLoginInterval = setInterval(() => {
+      const currentLoggedInFlag = localStorage.getItem("isLoggedIn");
+      setIsLoggedIn(currentLoggedInFlag === "true");
+    }, 2000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(checkLoginInterval);
+    };
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("customerProfile");
+    setIsLoggedIn(false);
+    alert("You have been logged out.");
   };
 
   const isActive = (path: string) => location.pathname === path;
@@ -101,9 +109,16 @@ export default function Navbar() {
             <Instagram className="w-6 h-6" />
           </a>
 
-          {loading ? (
-            <div className="w-6 h-6 animate-pulse bg-purple-200 rounded-full"></div>
-          ) : isLoggedIn ? (
+          <Link to="/cart" className="relative" aria-label="Cart">
+            <ShoppingCart className="w-6 h-6 text-customPink hover:text-customGreen" />
+            {cartItemsCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItemsCount}
+              </span>
+            )}
+          </Link>
+
+          {isLoggedIn ? (
             <div className="relative group">
               <Link 
                 to="/profile" 
@@ -131,15 +146,6 @@ export default function Navbar() {
               <User className="w-6 h-6" />
             </Link>
           )}
-
-          <Link to="/cart" className="relative" aria-label="Cart">
-            <ShoppingCart className="w-6 h-6 text-customPink hover:text-customGreen" />
-            {cartItemsCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {cartItemsCount}
-              </span>
-            )}
-          </Link>
         </div>
       </div>
 
@@ -177,4 +183,6 @@ export default function Navbar() {
       )}
     </nav>
   );
-}
+};
+
+export default Navbar;

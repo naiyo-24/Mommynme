@@ -7,7 +7,7 @@ import GlobalLoader from "./components/GlobalLoader";
 import LoginSignupPage from "./pages/LoginSignupPage";
 import NotFound from "./pages/NotFound";
 import { HashLoader } from 'react-spinners';
-import { supabase } from "./utils/supabaseClient";
+// Removed Supabase import as we're now using localStorage for authentication
 
 // Lazy-loaded components
 const Home = lazy(() => import("./pages/Home"));
@@ -28,17 +28,30 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
+    // Check if user is authenticated based on localStorage
+    const checkAuth = () => {
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      setIsAuthenticated(isLoggedIn);
     };
+    
     checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session?.user);
-    });
-
-    return () => subscription.unsubscribe();
+    
+    // Listen for storage changes (login/logout)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "isLoggedIn") {
+        checkAuth();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Check login status regularly (every second)
+    const checkLoginInterval = setInterval(checkAuth, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(checkLoginInterval);
+    };
   }, []);
 
   if (isAuthenticated === null) {

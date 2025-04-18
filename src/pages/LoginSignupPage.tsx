@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 
 interface FormState {
+  name: string; // Added name field
   email: string;
   password: string;
   error: string;
@@ -14,6 +15,7 @@ const LoginSignupPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [formState, setFormState] = useState<FormState>({
+    name: "",
     email: "",
     password: "",
     error: "",
@@ -23,6 +25,72 @@ const LoginSignupPage: React.FC = () => {
   const { email, password, error, loading } = formState;
   const navigate = useNavigate();
 
+  const registerCustomer = async (customerName: string, email: string, password: string) => {
+    const apiUrl = "https://frappe-client1.sirfbill.com/api/resource/Customer";
+    const payload = {
+      customer_name: customerName,
+      customer_type: "Individual",
+      email_id: email,
+      custom_password: password,
+    };
+  
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": "token 37505715c181575:bfd8e5d121bcf82",
+      },
+      body: JSON.stringify(payload),
+    });
+  
+    if (response.ok) {
+      const responseData = await response.json();
+      const customerData = responseData.data;
+      localStorage.setItem("customerProfile", JSON.stringify(customerData));
+      localStorage.setItem("isLoggedIn", "true"); // Flag user as logged in
+      alert("Registration successful! Welcome, " + customerData.customer_name);
+      return customerData;
+    }
+  
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to register customer");
+  };
+
+  const fetchCustomerDetails = async () => {
+    const apiUrl = "https://frappe-client1.sirfbill.com/api/resource/Customer?fields=[%22*%22]";
+
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Authorization": "token 37505715c181575:bfd8e5d121bcf82",
+      },
+    });
+
+    if (response.ok) {
+      const responseData = await response.json();
+      return responseData.data; // Return the list of customers
+    }
+
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to fetch customer details");
+  };
+
+  const loginCustomer = async (email: string, password: string) => {
+    const customers = await fetchCustomerDetails();
+
+    const customer = customers.find(
+      (cust: any) => cust.email_id === email && cust.custom_password === password
+    );
+
+    if (customer) {
+      localStorage.setItem("customerProfile", JSON.stringify(customer));
+      localStorage.setItem("isLoggedIn", "true"); // Flag user as logged in
+      alert("Login successful! Welcome back, " + customer.customer_name);
+      return customer;
+    }
+
+    throw new Error("Invalid email or password");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormState({ ...formState, error: "", loading: true });
@@ -30,32 +98,30 @@ const LoginSignupPage: React.FC = () => {
     try {
       // Replace with your authentication API calls
       if (isLogin) {
-        // Example login API call:
-        // const response = await fetch('/api/auth/login', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ email, password })
-        // });
-        // const data = await response.json();
-        // if (!response.ok) throw new Error(data.message);
-        
-        // For demo purposes, simulate successful login
-        console.log("Login attempt with:", { email, password });
-        navigate("/");
+        try {
+          await loginCustomer(email, password); // Validate email and password
+          console.log("Login attempt with:", { email, password });
+          navigate("/");
+        } catch (error: any) {
+          setFormState({
+            ...formState,
+            error: error.message || "Login failed. Please try again.",
+            loading: false,
+          });
+        }
       } else {
-        // Example signup API call:
-        // const response = await fetch('/api/auth/signup', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ email, password })
-        // });
-        // const data = await response.json();
-        // if (!response.ok) throw new Error(data.message);
-        
-        // For demo purposes, simulate successful signup
-        console.log("Signup attempt with:", { email, password });
-        alert("Signup successful! Please check your email for confirmation.");
-        navigate("/");
+        try {
+          await registerCustomer(formState.name, email, password); // Pass name, email, and password
+          console.log("Signup attempt with:", { email, password });
+          alert("Signup successful! Please check your email for confirmation.");
+          navigate("/");
+        } catch (error: any) {
+          setFormState({
+            ...formState,
+            error: error.message || "Customer registration failed. Please try again.",
+            loading: false,
+          });
+        }
       }
     } catch (error: any) {
       setFormState({ 
@@ -84,6 +150,21 @@ const LoginSignupPage: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700 flex items-center">
+              <span className="w-4 h-4 mr-2">👤</span>
+              Name
+            </label>
+            <input
+              type="text"
+              value={formState.name}
+              onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+              className="w-full px-4 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Your Name"
+              required
+            />
+          </div>
+
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700 flex items-center">
               <Mail className="w-4 h-4 mr-2" />
