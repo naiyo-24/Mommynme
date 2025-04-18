@@ -199,19 +199,19 @@ export default function Contact() {
             {[
               {
                 question: "How do I care for my woolen crochet items?",
-                answer: "Hand wash in cool water with mild detergent, lay flat to dry. Avoid wringing to maintain the stitch integrity."
+                answer: "Hand wash in lukewarm water with mild detergent and lay flat to dry, avoid iron to maintain the stitches."
               },
               {
                 question: "Can I request custom crochet designs?",
-                answer: "Absolutely! Each custom piece is a new story we'd love to weave together. Share your vision with us."
+                answer: "Absolutely ! You can surely request for crochet custom design. We would love to create a new piece that will hold your story. Please drop a DM on our Instagram about your custom order, we would love to customise that for you."
               },
               {
                 question: "What yarns do you work with?",
-                answer: "We use premium natural fibers - merino wool, cotton, and bamboo blends for that perfect cozy feel."
+                answer: "For our all of the crochet products, we do use premium quality acrylic yarn. For our earrings we do use high-quality cotton embroidery threads."
               },
               {
                 question: "How long does a custom order take?",
-                answer: "Typically 2-3 weeks depending on complexity. Each stitch receives our undivided attention."
+                answer: "Custom orders does take a bit more longer time than our usual orders. Each of the stitches receive our undivided attention, so the whole time for the piece will depend on the complexity of the design"
               }
             ].map((faq, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-sm border-t-4 border-purple-200 hover:border-purple-400 transition-all">

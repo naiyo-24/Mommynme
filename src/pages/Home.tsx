@@ -249,7 +249,7 @@ export default function Home() {
       )}
 
       {/* Trust Badges Section */}
-      <div className="bg-white py-6">
+      {/* <div className="bg-white py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div className="p-4">
@@ -270,7 +270,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Best Sellers Section */}
       <section className="py-12 md:py-20 bg-gray-50">
