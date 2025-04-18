@@ -180,7 +180,7 @@ export default function About() {
               {
                 title: "Crafted Just for You",
                 description:
-                  "Whether it’s a cute keychain or a custom creation, we make it personal — because you deserve one-of-a-kind, always.",
+                  "Whether it's a cute keychain or a custom creation, we make it personal — because you deserve one-of-a-kind, always.",
               },
             ].map((value, index) => (
               <div
