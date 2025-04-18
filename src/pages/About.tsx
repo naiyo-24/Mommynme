@@ -168,19 +168,19 @@ export default function About() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
               {
-                title: "Sustainability First",
+                title: "Made with Love",
                 description:
-                  "Every decision we make considers its environmental impact.",
+                  "Every piece is handmade — from our hands to your heart, with a little extra love in every stitch.",
               },
               {
-                title: "Quality & Innovation",
+                title: "Quality That Feels Like a Warm Hug",
                 description:
-                  "We continuously seek and develop the best eco-friendly solutions.",
+                  "Soft, sturdy, and stitched to last — we believe your crochet should be as cozy as it is charming.",
               },
               {
-                title: "Customer Success",
+                title: "Crafted Just for You",
                 description:
-                  "Your success in sustainable living is our success.",
+                  "Whether it’s a cute keychain or a custom creation, we make it personal — because you deserve one-of-a-kind, always.",
               },
             ].map((value, index) => (
               <div
