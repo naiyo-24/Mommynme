@@ -161,7 +161,7 @@ export default function Contact() {
                   <h3 className="font-semibold mb-1 text-yellow-800">Love Letters</h3>
                   <p className="text-gray-700">
                     <a href="mailto:info@mommyandme.com" className="text-yellow-600 hover:underline font-medium">
-                    atreyikundu.2002@gmail.com
+                      atreyikundu.2002@gmail.com
                     </a>
                   </p>
                 </div>
