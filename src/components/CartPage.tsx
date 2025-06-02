@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import '../styles/glassmorphism.css';
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, clearCart, getCartTotal } = useContext(CartContext);
+  const { cartItems, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useContext(CartContext);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ export default function CartPage() {
     }
   };
 
-  if (cart.length === 0) {
+  if (cartItems.length === 0) {
     return (
       <div className="min-h-screen py-12 bg-gradient-to-br from-modern-primary/5 to-modern-secondary/10">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,7 +59,7 @@ export default function CartPage() {
             <div className="glass-card overflow-hidden rounded-xl mb-6">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">{cart.length} {cart.length === 1 ? 'Item' : 'Items'}</h2>
+                  <h2 className="text-xl font-semibold">{cartItems.length} {cartItems.length === 1 ? 'Item' : 'Items'}</h2>
                   <button 
                     onClick={clearCart}
                     className="text-red-500 hover:text-red-700 flex items-center gap-1 text-sm transition-colors"
@@ -69,7 +69,7 @@ export default function CartPage() {
                 </div>
                 
                 <div className="space-y-4">
-                  {cart.map((item) => {
+                  {cartItems.map((item) => {
                     const isExpanded = expandedItem === item.id;
                     
                     return (
@@ -210,22 +210,22 @@ export default function CartPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal</span>
-                    <span>₹{getCartTotal().toFixed(2)}</span>
+                    <span>₹{getTotalPrice().toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span>₹{(cart.length > 0 ? 50 : 0).toFixed(2)}</span>
+                    <span>₹{(cartItems.length > 0 ? 50 : 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Tax</span>
-                    <span>₹{(getCartTotal() * 0.18).toFixed(2)}</span>
+                    <span>₹{(getTotalPrice() * 0.18).toFixed(2)}</span>
                   </div>
                   
                   <div className="h-px bg-gray-200 my-4"></div>
                   
                   <div className="flex justify-between text-lg font-semibold">
                     <span>Total</span>
-                    <span>₹{(getCartTotal() + (cart.length > 0 ? 50 : 0) + getCartTotal() * 0.18).toFixed(2)}</span>
+                    <span>₹{(getTotalPrice() + (cartItems.length > 0 ? 50 : 0) + getTotalPrice() * 0.18).toFixed(2)}</span>
                   </div>
                 </div>
                 
