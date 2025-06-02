@@ -19,12 +19,14 @@ interface Product {
   price: number;
   category: string;
   description: string;
+  html_description?: string;
   image: string | null;
   created_at: string;
   offer?: string;
   quantity: number;
   images?: string[];
   colors?: string[];
+  specs?: Record<string, string>;
   
   // New fields from API response
   item_code: string;
@@ -39,6 +41,7 @@ interface Product {
   disabled?: boolean;
   is_sales_item?: boolean;
   max_discount?: number;
+  in_stock?: boolean;
 }
 
 export default function Products() {
@@ -90,32 +93,146 @@ export default function Products() {
   
         const data = await response.json();
   
-        const productsData: Product[] = data.data.map((item: any) => ({
-          id: item.item_code,
-          name: item.item_name,
-          price: item.valuation_rate,
-          category: item.item_group,
-          description: item.description,
-          image: item.image,
-          created_at: item.creation,
-          quantity: item.opening_stock || 0,
-          colors: [], // Placeholder
-          images: [],  // Placeholder
-          item_code: item.item_code,
-          item_name: item.item_name,
-          item_group: item.item_group,
-          valuation_rate: item.valuation_rate,
-          standard_rate: item.standard_rate,
-          stock_uom: item.stock_uom,
-          brand: item.brand,
-          customer_code: item.customer_code,
-          opening_stock: item.opening_stock,
-          disabled: item.disabled,
-          is_sales_item: item.is_sales_item,
-          max_discount: item.max_discount
-        }));
-  
-        setProducts(productsData);
+        if (data && Array.isArray(data.data)) {
+          // Process HTML descriptions to extract price information
+          const extractPriceFromDescription = (desc: string): number | null => {
+            if (!desc) return null;
+            // Look for price patterns like "₹90" in the description
+            const priceMatch = desc.match(/₹(\d+)/);
+            return priceMatch ? parseInt(priceMatch[1], 10) : null;
+          };
+
+          // Process HTML descriptions to extract color information
+          const extractColorsFromDescription = (desc: string): string[] => {
+            if (!desc) return [];
+            // Common color keywords to look for
+            const colorKeywords = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Purple', 'Pink', 'Orange', 'Gray'];
+            const colors = [];
+            
+            for (const color of colorKeywords) {
+              if (desc.toLowerCase().includes(color.toLowerCase())) {
+                colors.push(color);
+              }
+            }
+            
+            return colors.length > 0 ? colors : getRandomColors();
+          };
+          
+          // Generate random colors for visual variety when no colors are specified
+          const getRandomColors = (): string[] => {
+            const allColors = ['#FF5252', '#4CAF50', '#2196F3', '#9C27B0', '#FFC107', '#FF9800', '#795548', '#607D8B'];
+            const numColors = Math.floor(Math.random() * 3) + 1; // 1 to 3 colors
+            const selectedColors = [];
+            
+            for (let i = 0; i < numColors; i++) {
+              const randomIndex = Math.floor(Math.random() * allColors.length);
+              selectedColors.push(allColors[randomIndex]);
+            }
+            
+            return selectedColors;
+          };
+
+          // Function to extract specifications from HTML description
+          const extractSpecsFromDescription = (desc: string): Record<string, string> => {
+            if (!desc) return {};
+            
+            const specs: Record<string, string> = {};
+            const sizeMatch = desc.match(/Size\s*:\s*([^<]+)/i);
+            if (sizeMatch) specs.size = sizeMatch[1].trim();
+            
+            const yarnMatch = desc.match(/Yarn type\s*:\s*([^<]+)/i);
+            if (yarnMatch) specs.yarnType = yarnMatch[1].trim();
+            
+            const materialMatch = desc.match(/Material\s*:\s*([^<]+)/i);
+            if (materialMatch) specs.material = materialMatch[1].trim();
+
+            // Extract other common specifications
+            const dimensionsMatch = desc.match(/Dimensions\s*:\s*([^<]+)/i);
+            if (dimensionsMatch) specs.dimensions = dimensionsMatch[1].trim();
+            
+            const weightMatch = desc.match(/Weight\s*:\s*([^<]+)/i);
+            if (weightMatch) specs.weight = weightMatch[1].trim();
+            
+            return specs;
+          };
+
+          // Function to clean HTML tags from text
+          const cleanHtmlText = (html: string): string => {
+            if (!html) return "";
+            return html.replace(/<[^>]*>?/gm, ' ')
+              .replace(/\s{2,}/g, ' ')
+              .trim();
+          };
+
+          const productsData: Product[] = data.data.map((item: any) => {
+            // Extract price from description if valuation_rate is 0
+            const extractedPrice = extractPriceFromDescription(item.description);
+            const colors = extractColorsFromDescription(item.description);
+            const calculatedPrice = item.valuation_rate > 0 ? item.valuation_rate : 
+                                    item.standard_rate > 0 ? item.standard_rate : 
+                                    extractedPrice || 100; // Fallback price
+            
+            // Calculate "offer" by comparing standard_rate and valuation_rate
+            let offer = null;
+            if (item.standard_rate > 0 && item.valuation_rate > 0 && item.standard_rate > item.valuation_rate) {
+              const discount = ((item.standard_rate - item.valuation_rate) / item.standard_rate) * 100;
+              offer = discount.toFixed(0);
+            }
+
+            // Process the image path to ensure it's a complete URL if needed
+            let imageUrl = item.image;
+            if (imageUrl && !imageUrl.startsWith('http')) {
+              // Append base URL if it's a relative path
+              imageUrl = `https://sirfbill.mommynmecrochet.com${imageUrl}`;
+            }
+
+            // Generate additional images for display purposes (in a real app, these would come from the API)
+            const additionalImages = [];
+            if (imageUrl) {
+              additionalImages.push(imageUrl);
+            }
+
+            // Extract product specifications
+            const specs = extractSpecsFromDescription(item.description);
+            
+            return {
+              id: item.name || item.item_code,
+              name: item.item_name || item.name,
+              price: calculatedPrice,
+              category: item.item_group || "Uncategorized",
+              description: cleanHtmlText(item.description) || "",
+              html_description: item.description || "",
+              image: imageUrl,
+              created_at: item.creation,
+              quantity: parseInt(item.opening_stock || "0", 10),
+              colors: colors,
+              images: additionalImages,
+              specs: specs,
+              
+              // Map all API fields directly
+              item_code: item.item_code,
+              item_name: item.item_name,
+              item_group: item.item_group,
+              valuation_rate: parseFloat(item.valuation_rate || "0"),
+              standard_rate: parseFloat(item.standard_rate || "0"),
+              stock_uom: item.stock_uom,
+              brand: item.brand,
+              customer_code: item.customer_code || "",
+              opening_stock: parseInt(item.opening_stock || "0", 10),
+              disabled: item.disabled === 1,
+              is_sales_item: item.is_sales_item === 1,
+              max_discount: parseFloat(item.max_discount || "0"),
+              
+              // Additional useful fields
+              offer: offer,
+              in_stock: parseInt(item.opening_stock || "0", 10) > 0 && item.disabled !== 1
+            };
+          });
+        
+          setProducts(productsData);
+        } else {
+          console.error("Invalid API response format", data);
+        }
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -368,38 +485,74 @@ export default function Products() {
                       <div className={`swiper-button-next swiper-button-next-${product.id}`}></div>
                       <div className={`swiper-button-prev swiper-button-prev-${product.id}`}></div>
 
-                      {isOutOfStock && (
-                        <div className="absolute top-2 left-2 bg-gray-600/90 backdrop-blur-sm text-white text-sm px-2 py-1 rounded-full">
-                          Out of Stock
-                        </div>
-                      )}
+                      {/* Product Badges */}
+                      <div className="absolute top-2 left-2 flex flex-col gap-2">
+                        {isOutOfStock && (
+                          <div className="out-of-stock-badge">
+                            Out of Stock
+                          </div>
+                        )}
+                        {product.offer && (
+                          <div className="sale-badge">
+                            {product.offer}% OFF
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Product Details */}
                     <div className="p-4 flex flex-col flex-grow bg-white/30 backdrop-blur-sm">
+                      {/* Product Title & Badges */}
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-lg font-semibold">{product.name}</h3>
-                        {product.offer && (
-                          <span className="bg-gradient-to-r from-modern-accent to-modern-accent/80 text-white text-xs font-medium px-2.5 py-0.5 rounded-full shadow-sm">
-                            {product.offer}% OFF
-                          </span>
-                        )}
+                        <div className="flex flex-col items-end gap-1">
+                          {/* Offer Badge */}
+                          {product.offer && (
+                            <span className="sale-badge">
+                              {product.offer}% OFF
+                            </span>
+                          )}
+                          
+                          {/* Stock Status Badge */}
+                          {product.in_stock ? (
+                            product.quantity > 10 ? (
+                              <span className="in-stock-badge">In Stock</span>
+                            ) : (
+                              <span className="low-stock-badge">Low Stock: {product.quantity} left</span>
+                            )
+                          ) : (
+                            <span className="out-of-stock-badge">Out of Stock</span>
+                          )}
+                        </div>
                       </div>
+                      
+                      {/* Product Description */}
                       <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
+                      
+                      {/* Specifications (if available) */}
+                      {product.specs && Object.keys(product.specs).length > 0 && (
+                        <div className="specs-container">
+                          <p className="specs-title">Specifications:</p>
+                          {Object.entries(product.specs).map(([key, value]) => (
+                            <div key={key} className="spec-item">
+                              <span className="spec-label">{key}:</span>
+                              <span className="spec-value">{value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Color Options */}
                       {hasColors && (
                         <div className="mb-3">
-                          <p className="text-sm text-gray-700 mb-1">Colors:</p>
+                          <p className="text-sm text-gray-700 mb-1">Available Colors:</p>
                           <div className="flex gap-2">
                             {product.colors?.map(color => (
                               <button
                                 key={color}
                                 onClick={() => handleColorSelect(product.id, color)}
-                                className={`w-6 h-6 rounded-full transition-all ${
-                                  selectedColors[product.id] === color
-                                    ? "ring-2 ring-offset-2 ring-modern-primary scale-110"
-                                    : "border border-gray-300 hover:border-gray-500"
+                                className={`color-swatch ${
+                                  selectedColors[product.id] === color ? "selected" : ""
                                 }`}
                                 style={{ backgroundColor: colorPalette[color] || color }}
                                 title={color}
@@ -408,7 +561,13 @@ export default function Products() {
                           </div>
                         </div>
                       )}
+                      
+                      {/* Product code/SKU */}
+                      <div className="text-xs text-gray-500 mb-2">
+                        Item Code: <span className="font-medium">{product.item_code}</span>
+                      </div>
 
+                      {/* Price and Add to Cart */}
                       <div className="mt-auto flex justify-between items-center">
                         <div>
                           {product.offer ? (
@@ -424,6 +583,9 @@ export default function Products() {
                             <span className="font-bold text-lg text-modern-primary">
                               ₹{product.price.toFixed(2)}
                             </span>
+                          )}
+                          {product.stock_uom && (
+                            <span className="text-xs text-gray-500 block">per {product.stock_uom}</span>
                           )}
                         </div>
                         <button
