@@ -19,14 +19,26 @@ interface Product {
   price: number;
   category: string;
   description: string;
-  image: string;
-  img2?: string;
-  img3?: string;
+  image: string | null;
   created_at: string;
   offer?: string;
   quantity: number;
-  images?: string[];  // Make elements non-optional if you prefer
+  images?: string[];
   colors?: string[];
+  
+  // New fields from API response
+  item_code: string;
+  item_name: string;
+  item_group: string;
+  valuation_rate: number;
+  standard_rate: number;
+  stock_uom: string;
+  brand: string | null;
+  customer_code: string;
+  opening_stock: number;
+  disabled?: boolean;
+  is_sales_item?: boolean;
+  max_discount?: number;
 }
 
 export default function Products() {
@@ -67,7 +79,7 @@ export default function Products() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('https://frappe-client1.sirfbill.com/api/resource/Item?fields=["*"]', {
+        const response = await fetch('https://sirfbill.mommynmecrochet.com/api/resource/Item?fields=["*"]', {
           method: 'GET',
           headers: {
             "Authorization": "token 37505715c181575:bfd8e5d121bcf82",
@@ -88,7 +100,19 @@ export default function Products() {
           created_at: item.creation,
           quantity: item.opening_stock || 0,
           colors: [], // Placeholder
-          images: []  // Placeholder
+          images: [],  // Placeholder
+          item_code: item.item_code,
+          item_name: item.item_name,
+          item_group: item.item_group,
+          valuation_rate: item.valuation_rate,
+          standard_rate: item.standard_rate,
+          stock_uom: item.stock_uom,
+          brand: item.brand,
+          customer_code: item.customer_code,
+          opening_stock: item.opening_stock,
+          disabled: item.disabled,
+          is_sales_item: item.is_sales_item,
+          max_discount: item.max_discount
         }));
   
         setProducts(productsData);

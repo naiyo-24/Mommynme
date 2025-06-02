@@ -1,260 +1,250 @@
-import { useCart } from './CartContext';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
+import { CartContext, CartItem } from './CartContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { Trash2, Minus, Plus, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion } from 'framer-motion';
+import '../styles/glassmorphism.css';
 
-// Define the Product interface
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  description: string;
-  image: string;
-  created_at: string;
-  offer?: string;
-  quantity: number;
-}
+export default function CartPage() {
+  const { cart, removeFromCart, updateQuantity, clearCart, getCartTotal } = useContext(CartContext);
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-// Define the CartItem interface
-interface CartItem extends Product {
-  quantity: number;
-}
-
-const CartPage = () => {
-  const {
-    cartItems,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    getTotalItems,
-    getTotalPrice,
-    addToCart,
-  } = useCart();
-
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-
-  // Example product data to replace Supabase call
-  const exampleProducts: Product[] = [
-    {
-      id: "1",
-      name: "Premium Yoga Mat",
-      price: 2499,
-      category: "Fitness",
-      description: "Eco-friendly yoga mat with perfect grip",
-      image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f",
-      created_at: "2023-06-15",
-      offer: "15",
-      quantity: 20
-    },
-    {
-      id: "2",
-      name: "Wireless Earbuds",
-      price: 1799,
-      category: "Electronics",
-      description: "Crystal clear sound with noise cancellation",
-      image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df",
-      created_at: "2023-07-10",
-      offer: "10",
-      quantity: 15
-    },
-    {
-      id: "3",
-      name: "Organic Cotton T-Shirt",
-      price: 899,
-      category: "Clothing",
-      description: "100% organic cotton, comfortable fit",
-      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27",
-      created_at: "2023-05-22",
-      quantity: 30
-    },
-    {
-      id: "4",
-      name: "Stainless Steel Water Bottle",
-      price: 649,
-      category: "Accessories",
-      description: "Keeps drinks cold for 24 hours",
-      image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8",
-      created_at: "2023-08-05",
-      offer: "20",
-      quantity: 25
-    },
-    {
-      id: "5",
-      name: "Smart Fitness Tracker",
-      price: 1999,
-      category: "Fitness",
-      description: "Track your steps, heart rate, and sleep patterns",
-      image: "https://images.unsplash.com/photo-1551645120-d70bfe84c826",
-      created_at: "2023-09-12",
-      quantity: 18
+  const handleQuantityChange = (id: string, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    updateQuantity(id, newQuantity);
+  };
+  
+  const toggleExpand = (id: string) => {
+    if (expandedItem === id) {
+      setExpandedItem(null);
+    } else {
+      setExpandedItem(id);
     }
-  ];
-
-  // Fetch all products - replaced Supabase with example data
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        // Replace this with your actual API call if needed:
-        // const response = await fetch('your-api-endpoint/products');
-        // const data = await response.json();
-        // setAllProducts(data);
-        
-        setAllProducts(exampleProducts);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        // Fallback to example data if API fails
-        setAllProducts(exampleProducts);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  // Calculate total savings based on offers
-  const calculateSavings = (items: CartItem[]) => {
-    return items.reduce((totalSavings, item: CartItem) => {
-      if (item.offer) {
-        const discountPercentage = parseFloat(item.offer);
-        if (!isNaN(discountPercentage)) {
-          const discount = (item.price * item.quantity * discountPercentage) / 100;
-          return totalSavings + discount;
-        }
-      }
-      return totalSavings;
-    }, 0);
   };
 
-  const totalSavings = calculateSavings(cartItems);
-  const totalPrice = getTotalPrice();
-  const finalPrice = totalPrice - totalSavings;
-
-  // Function to get recommended products
-  const getRecommendedProducts = (cartItems: CartItem[], allProducts: Product[]) => {
-    if (cartItems.length === 0) {
-      // If the cart is empty, return random products
-      return allProducts.sort(() => 0.5 - Math.random()).slice(0, 3);
-    }
-
-    // Get categories of products in the cart
-    const categories = Array.from(new Set(cartItems.map((item: CartItem) => item.category)));
-
-    // Filter products that belong to the same categories as the cart items
-    const recommendedProducts = allProducts.filter(
-      (product) =>
-        categories.includes(product.category) &&
-        !cartItems.some((item: CartItem) => item.id === product.id)
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen py-12 bg-gradient-to-br from-modern-primary/5 to-modern-secondary/10">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="glass-card p-8 rounded-xl text-center">
+            <h1 className="text-2xl font-semibold mb-6">Your cart is empty</h1>
+            <p className="text-gray-600 mb-8">Looks like you haven't added any products to your cart yet.</p>
+            <Link 
+              to="/products"
+              className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-modern-primary to-modern-accent text-white font-medium hover:shadow-lg transition-all"
+            >
+              <ArrowLeft className="mr-2" size={16} /> Continue Shopping
+            </Link>
+          </div>
+        </div>
+      </div>
     );
-
-    // If there are not enough recommended products, add random products
-    if (recommendedProducts.length < 3) {
-      const randomProducts = allProducts
-        .filter((product) => !cartItems.some((item: CartItem) => item.id === product.id))
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3 - recommendedProducts.length);
-      return [...recommendedProducts, ...randomProducts];
-    }
-
-    return recommendedProducts.slice(0, 3);
-  };
-
-  const recommendedProducts = getRecommendedProducts(cartItems, allProducts);
+  }
 
   return (
-    <div className="p-4 sm:p-6 bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
-      <h1 className="text-3xl sm:text-4xl font-bold text-purple-900 mb-6 sm:mb-8 text-center py-8">
-        Your Shopping Cart
-      </h1>
-      {cartItems.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center text-gray-600"
-        >
-          <p className="text-lg">Your cart is empty.</p>
-          <p className="mt-2">
-            Explore our{' '}
-            <a href="/products" className="text-purple-600 underline hover:text-purple-700">
-              products
-            </a>{' '}
-            to add items to your cart.
-          </p>
-        </motion.div>
-      ) : (
-        <div className="max-w-4xl mx-auto">
-          <AnimatePresence>
-            {cartItems.map((item: CartItem) => {
-              const discountPercentage = item.offer ? parseFloat(item.offer) : 0;
-              const discount = !isNaN(discountPercentage)
-                ? (item.price * discountPercentage) / 100
-                : 0;
-              const offerPrice = item.price - discount;
-
-              return (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white p-4 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-6"
+    <div className="min-h-screen py-12 bg-gradient-to-br from-modern-primary/5 to-modern-secondary/10 relative">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="blur-circle w-72 h-72 bg-modern-accent/20 top-[5%] right-[10%]"></div>
+        <div className="blur-circle w-96 h-96 bg-modern-secondary/15 bottom-[10%] left-[5%]"></div>
+        <div className="blur-circle w-64 h-64 bg-modern-primary/15 top-[40%] left-[20%] float"></div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <h1 className="text-3xl font-bold mb-10 text-center text-gray-800">Your Shopping Cart</h1>
+        
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="lg:w-2/3">
+            <div className="glass-card overflow-hidden rounded-xl mb-6">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">{cart.length} {cart.length === 1 ? 'Item' : 'Items'}</h2>
+                  <button 
+                    onClick={clearCart}
+                    className="text-red-500 hover:text-red-700 flex items-center gap-1 text-sm transition-colors"
+                  >
+                    <Trash2 size={16} /> Clear Cart
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  {cart.map((item) => {
+                    const isExpanded = expandedItem === item.id;
+                    
+                    return (
+                      <motion.div 
+                        key={`${item.id}-${item.color}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white/40 backdrop-blur-sm rounded-lg overflow-hidden shadow-sm border border-white/20"
+                      >
+                        <div className="p-4 flex gap-4">
+                          <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
+                            <img 
+                              src={item.image || 'https://placehold.co/200x200'} 
+                              alt={item.name} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = "https://placehold.co/200x200";
+                              }}
+                            />
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="flex justify-between">
+                              <div>
+                                <h3 className="font-medium text-gray-800">{item.name}</h3>
+                                {item.category && (
+                                  <p className="text-sm text-gray-500">{item.category}</p>
+                                )}
+                                {item.color && (
+                                  <div className="flex items-center mt-1">
+                                    <span className="text-sm text-gray-500 mr-2">Color:</span>
+                                    <span 
+                                      className="w-4 h-4 rounded-full border border-gray-300" 
+                                      style={{ backgroundColor: item.color }}
+                                    ></span>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="text-right">
+                                <p className="font-semibold text-modern-primary">₹{item.price.toFixed(2)}</p>
+                                {item.standard_rate && item.standard_rate > item.price && (
+                                  <p className="text-sm text-gray-400 line-through">
+                                    ₹{item.standard_rate.toFixed(2)}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="flex justify-between items-center mt-2">
+                              <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
+                                <button
+                                  onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                                  disabled={item.quantity <= 1}
+                                  className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <span className="px-2 text-sm font-medium">{item.quantity}</span>
+                                <button
+                                  onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                  className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                              
+                              <div className="flex items-center gap-4">
+                                <p className="font-semibold">
+                                  ₹{(item.price * item.quantity).toFixed(2)}
+                                </p>
+                                <button
+                                  onClick={() => removeFromCart(item.id)}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  <Trash2 size={18} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div 
+                          className="px-4 py-2 bg-gray-50/50 border-t border-gray-100 cursor-pointer hover:bg-gray-50/80 transition-colors flex justify-between items-center"
+                          onClick={() => toggleExpand(item.id)}
+                        >
+                          <span className="text-sm text-gray-500">
+                            {isExpanded ? 'Hide details' : 'Show details'}
+                          </span>
+                          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        </div>
+                        
+                        {isExpanded && (
+                          <div className="px-4 py-3 bg-gray-50/30 border-t border-gray-100">
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              {item.item_code && (
+                                <div>
+                                  <span className="text-gray-500">Item Code:</span>
+                                  <p>{item.item_code}</p>
+                                </div>
+                              )}
+                              {item.brand && (
+                                <div>
+                                  <span className="text-gray-500">Brand:</span>
+                                  <p>{item.brand}</p>
+                                </div>
+                              )}
+                              {item.stock_uom && (
+                                <div>
+                                  <span className="text-gray-500">Unit:</span>
+                                  <p>{item.stock_uom}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => navigate('/products')}
+              className="flex items-center gap-2 font-medium text-modern-primary hover:text-modern-secondary transition-colors"
+            >
+              <ArrowLeft size={16} /> Continue Shopping
+            </button>
+          </div>
+          
+          <div className="lg:w-1/3">
+            <div className="glass-card rounded-xl overflow-hidden sticky top-6">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Subtotal</span>
+                    <span>₹{getCartTotal().toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>Shipping</span>
+                    <span>₹{(cart.length > 0 ? 50 : 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>Tax</span>
+                    <span>₹{(getCartTotal() * 0.18).toFixed(2)}</span>
+                  </div>
+                  
+                  <div className="h-px bg-gray-200 my-4"></div>
+                  
+                  <div className="flex justify-between text-lg font-semibold">
+                    <span>Total</span>
+                    <span>₹{(getCartTotal() + (cart.length > 0 ? 50 : 0) + getCartTotal() * 0.18).toFixed(2)}</span>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={() => navigate('/checkout')}
+                  className="w-full mt-8 py-3 rounded-full bg-gradient-to-r from-modern-primary to-modern-accent text-white font-medium hover:shadow-lg transition-all"
                 >
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={item.image || 'https://placehold.co/600x400'}
-                      alt={item.name}
-                      className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg"
-                      onError={(e) => {
-                        e.currentTarget.src = 'https://placehold.co/600x400';
-                      }}
-                    />
-                    <div>
-                      <h2 className="text-lg sm:text-xl font-semibold text-purple-900">
-                        {item.name}
-                      </h2>
-                      <div className="flex items-center space-x-2">
-                        <p className="text-gray-600 line-through">
-                          ₹{item.price.toFixed(2)}
-                        </p>
-                        <p className="text-green-600 font-semibold">
-                          ₹{offerPrice.toFixed(2)}
-                        </p>
-                      </div>
-                      {item.offer && (
-                        <p className="text-sm text-green-600">
-                          {item.offer}% off
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <input
-                      type="number"
-                      value={item.quantity}
-                      onChange={(e) =>
-                        updateQuantity(item.id, parseInt(e.target.value))
-                      }
-                      min="1"
-                      className="w-16 px-2 py-1 border rounded-lg text-center focus:ring-2 focus:ring-purple-500"
-                    />
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-
-          {/* Rest of your component remains the same */}
-          {/* ... (keep all the existing JSX for totals, recommendations, etc) ... */}
+                  Proceed to Checkout
+                </button>
+                
+                <div className="mt-6 text-center text-sm text-gray-500">
+                  <p>Secured checkout experience</p>
+                  <p className="mt-1">All payments are processed securely</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
-};
-
-export default CartPage;
+}

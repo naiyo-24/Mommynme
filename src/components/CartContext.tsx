@@ -11,6 +11,10 @@ interface Product {
   offer?: string;
   quantity: number;
   colors?: string[];
+  item_code?: string;
+  stock_uom?: string;
+  standard_rate?: number;
+  brand?: string | null;
 }
 
 interface CartItem extends Product {
@@ -66,19 +70,25 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [cartItems, loading]);
 
   const addToCart = (product: Product, selectedColor?: string) => {
-    const existingItem = cartItems.find((item) => 
-      item.id === product.id && item.selectedColor === selectedColor
-    );
+    setCartItems(prevCart => {
+      // Check if product is already in cart
+      const existingProductIndex = prevCart.findIndex(
+        item => item.id === product.id && item.selectedColor === selectedColor
+      );
 
-    if (existingItem) {
-      updateQuantity(product.id, existingItem.quantity + 1);
-    } else {
-      setCartItems([...cartItems, { 
-        ...product, 
-        quantity: 1, 
-        selectedColor 
-      }]);
-    }
+      if (existingProductIndex !== -1) {
+        // If product exists, increase quantity
+        const updatedCart = [...prevCart];
+        updatedCart[existingProductIndex] = {
+          ...updatedCart[existingProductIndex],
+          quantity: updatedCart[existingProductIndex].quantity + 1
+        };
+        return updatedCart;
+      } else {
+        // If product doesn't exist, add it to cart
+        return [...prevCart, { ...product, quantity: 1, selectedColor }];
+      }
+    });
   };
 
   const removeFromCart = (id: string) => {

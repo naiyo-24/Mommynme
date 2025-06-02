@@ -26,7 +26,7 @@ const LoginSignupPage: React.FC = () => {
   const navigate = useNavigate();
 
   const registerCustomer = async (customerName: string, email: string, password: string) => {
-    const apiUrl = "https://frappe-client1.sirfbill.com/api/resource/Customer";
+    const apiUrl = "https://sirfbill.mommynmecrochet.com/api/resource/Customer";
     const payload = {
       customer_name: customerName,
       customer_type: "Individual",
@@ -56,7 +56,7 @@ const LoginSignupPage: React.FC = () => {
   };
 
   const fetchCustomerDetails = async () => {
-    const apiUrl = "https://frappe-client1.sirfbill.com/api/resource/Customer?fields=[%22*%22]";
+    const apiUrl = "https://sirfbill.mommynmecrochet.com/api/resource/Customer?fields=[%22*%22]";
 
     const response = await fetch(apiUrl, {
       method: "GET",
