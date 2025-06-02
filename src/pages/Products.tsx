@@ -282,12 +282,15 @@ export default function Products() {
   };
 
   const handleAddToCart = (product: Product) => {
+    // If color is required but not selected, automatically use the first color
     if (product.colors && product.colors.length > 0 && !selectedColors[product.id]) {
-      alert("Please select a color");
-      return;
+      // Select the first color automatically
+      const firstColor = product.colors[0];
+      setSelectedColors(prev => ({ ...prev, [product.id]: firstColor }));
+      addToCart(product, firstColor);
+    } else {
+      addToCart(product, product.colors ? selectedColors[product.id] : undefined);
     }
-
-    addToCart(product, product.colors ? selectedColors[product.id] : undefined);
   };
 
   const handleViewMoreImages = useCallback((images: string[]) => {
@@ -540,25 +543,7 @@ export default function Products() {
                         </div>
                       )}
 
-                      {/* Color Options */}
-                      {hasColors && (
-                        <div className="mb-3">
-                          <p className="text-sm text-gray-700 mb-1">Available Colors:</p>
-                          <div className="flex gap-2">
-                            {product.colors?.map((color, colorIndex) => (
-                              <button
-                                key={`${product.id}_${color}_${colorIndex}`}
-                                onClick={() => handleColorSelect(product.id, color)}
-                                className={`color-swatch ${
-                                  selectedColors[product.id] === color ? "selected" : ""
-                                }`}
-                                style={{ backgroundColor: colorPalette[color] || color }}
-                                title={color}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      {/* Color options removed as per request */}
                       
                       {/* Product code/SKU */}
                       <div className="text-xs text-gray-500 mb-2">
