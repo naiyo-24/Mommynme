@@ -59,7 +59,7 @@ export default function Home() {
   // Example data to replace Supabase calls
   const examplePoster: Poster = {
     id: "1",
-    title: "Summer Collection 2023",
+    title: "Summer Collection ",
     description: "Discover our new summer collection with exclusive designs",
     image_url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b",
     image2: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b",
@@ -527,7 +527,7 @@ export default function Home() {
       </section>
 
       {/* Shop by Category Section */}
-      <section className="py-12 md:py-20 bg-white/20 backdrop-blur-md relative">
+      {/* <section className="py-12 md:py-20 bg-white/20 backdrop-blur-md relative">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="blur-circle w-80 h-80 bg-modern-secondary/20 top-[10%] left-[5%]"></div>
           <div className="blur-circle w-96 h-96 bg-modern-primary/20 bottom-[10%] right-[15%]"></div>
@@ -578,7 +578,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Media Coverage Section */}
       <MediaCoverageSection />

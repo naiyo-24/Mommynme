@@ -163,7 +163,7 @@ const Footer = () => {
             <span className="px-3">
               &copy; {new Date().getFullYear()} Mommy n Me
             </span>
-            <span className="px-3">Developed by <strong className="font-poppins">Subhankar Das</strong></span>
+            <span className="px-3">Powerd by <strong className="font-poppins">Naiyo24</strong></span>
           </p>
         </div>
       </div>
