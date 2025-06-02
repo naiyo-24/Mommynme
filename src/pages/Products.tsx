@@ -196,7 +196,7 @@ export default function Products() {
             const specs = extractSpecsFromDescription(item.description);
             
             return {
-              id: item.name || item.item_code,
+              id: (item.name || item.item_code).replace(/[^a-zA-Z0-9]/g, '_'),
               name: item.item_name || item.name,
               price: calculatedPrice,
               category: item.item_group || "Uncategorized",
@@ -545,9 +545,9 @@ export default function Products() {
                         <div className="mb-3">
                           <p className="text-sm text-gray-700 mb-1">Available Colors:</p>
                           <div className="flex gap-2">
-                            {product.colors?.map(color => (
+                            {product.colors?.map((color, colorIndex) => (
                               <button
-                                key={color}
+                                key={`${product.id}_${color}_${colorIndex}`}
                                 onClick={() => handleColorSelect(product.id, color)}
                                 className={`color-swatch ${
                                   selectedColors[product.id] === color ? "selected" : ""
