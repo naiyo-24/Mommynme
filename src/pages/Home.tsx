@@ -21,16 +21,26 @@ interface Poster {
 
 interface BestSeller {
   id: string;
-  title: string;
+  name: string;
   description: string;
   price: number;
-  image_url: string;
-  image2: string;
-  image3: string;
-  offer: string;
+  image: string | null;
+  offer?: string;
   category: string;
   created_at: string;
   quantity: number;
+  images?: string[];
+  colors?: string[];
+  
+  // API fields
+  item_code: string;
+  item_name: string;
+  item_group: string;
+  valuation_rate: number;
+  standard_rate: number;
+  stock_uom: string;
+  brand: string | null;
+  in_stock: boolean;
 }
 
 interface Product {
@@ -144,15 +154,102 @@ export default function Home() {
       try {
         setLoading(true);
         
-        // Replace these with your actual API calls
-        // Example:
-        // const posterResponse = await fetch('your-api-endpoint/poster');
-        // const posterData = await posterResponse.json();
-        // setPoster(posterData);
+        // Fetch products from API for Best Sellers
+        const response = await fetch('https://sirfbill.mommynmecrochet.com/api/resource/Item?fields=["*"]', {
+          method: 'GET',
+          headers: {
+            "Authorization": "token 37505715c181575:bfd8e5d121bcf82",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        });
         
-        // Using example data for now
+        const data = await response.json();
+        
+        if (data && Array.isArray(data.data)) {
+          // Function to extract price from HTML description
+          const extractPriceFromDescription = (desc: string): number | null => {
+            if (!desc) return null;
+            const priceMatch = desc.match(/₹(\d+)/);
+            return priceMatch ? parseInt(priceMatch[1], 10) : null;
+          };
+
+          // Process image URLs to ensure they're complete
+          const processImageUrl = (imageUrl: string | null): string | null => {
+            if (!imageUrl) return null;
+            
+            // If it starts with "/files/", prepend the base URL
+            if (imageUrl.startsWith('/files/')) {
+              return `https://sirfbill.mommynmecrochet.com${imageUrl}`;
+            }
+            return imageUrl;
+          };
+
+          // Function to clean HTML tags from text
+          const cleanHtmlText = (html: string): string => {
+            if (!html) return "";
+            return html.replace(/<\/?[^>]*>?/gm, ' ')
+              .replace(/\s{2,}/g, ' ')
+              .trim();
+          };
+
+          // Process the products and select the best sellers (top 4 products)
+          const productsData: BestSeller[] = data.data
+            .filter((item: any) => item.is_sales_item !== 0) // Only include sales items
+            .slice(0, 4) // Take only first 4 items
+            .map((item: any) => {
+              // Extract price from description if valuation_rate is 0
+              const extractedPrice = extractPriceFromDescription(item.description);
+              const calculatedPrice = item.valuation_rate > 0 ? item.valuation_rate : 
+                                     item.standard_rate > 0 ? item.standard_rate : 
+                                     extractedPrice || 100; // Fallback price
+              
+              // Calculate "offer" by comparing standard_rate and valuation_rate
+              let offer = null;
+              if (item.standard_rate > 0 && item.valuation_rate > 0 && item.standard_rate > item.valuation_rate) {
+                const discount = ((item.standard_rate - item.valuation_rate) / item.standard_rate) * 100;
+                offer = discount.toFixed(0);
+              }
+
+              // Process the image path to ensure it's a complete URL
+              const imageUrl = processImageUrl(item.image);
+              
+              return {
+                id: item.name || item.item_code,
+                name: item.item_name || item.name,
+                price: calculatedPrice,
+                category: item.item_group || "Uncategorized",
+                description: cleanHtmlText(item.description) || "",
+                image: imageUrl,
+                created_at: item.creation,
+                quantity: parseInt(item.opening_stock || "0", 10),
+                colors: [],
+                images: [imageUrl].filter(Boolean), // Only add valid image URLs
+                
+                // Original API fields
+                item_code: item.item_code,
+                item_name: item.item_name,
+                item_group: item.item_group,
+                valuation_rate: parseFloat(item.valuation_rate || "0"),
+                standard_rate: parseFloat(item.standard_rate || "0"),
+                stock_uom: item.stock_uom,
+                brand: item.brand,
+                
+                // Additional useful fields
+                offer: offer || "",
+                in_stock: true // Always set products to be in stock
+              };
+            });
+          
+          setBestSellers(productsData);
+        } else {
+          // Fallback to example data if API response is not as expected
+          console.error("Invalid API response format", data);
+          setBestSellers(exampleBestSellers);
+        }
+        
+        // Still use example data for posters and categories
         setPoster(examplePoster);
-        setBestSellers(exampleBestSellers);
         setCategories(exampleCategories);
         
       } catch (error) {
@@ -368,45 +465,55 @@ export default function Home() {
                 >
                   <div className="relative overflow-hidden">
                     <img
-                      src={product.image_url}
-                      alt={product.title}
+                      src={product.image || "https://placehold.co/600x400"}
+                      alt={product.name}
                       className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                       onError={(e) => {
                         e.currentTarget.src = "https://placehold.co/600x400";
                       }}
                     />
-                    {product.offer && (
-                      <div className="absolute top-4 right-4 bg-gradient-to-r from-modern-accent to-modern-accent/80 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                        {product.offer}% OFF
-                      </div>
-                    )}
+                    
+                    {/* Status Badges */}
+                    <div className="absolute top-2 right-2 flex flex-col gap-2">
+                      {product.offer && parseInt(product.offer) > 0 && (
+                        <div className="sale-badge">
+                          {product.offer}% OFF
+                        </div>
+                      )}
+                      
+                      {/* All products are now in stock, so we don't show an out-of-stock badge */}
+                    </div>
                   </div>
 
                   <div className="p-6 bg-white/30 backdrop-blur-sm">
                     <h3 className="text-xl font-semibold mb-2 line-clamp-1">
-                      {product.title}
+                      {product.name}
                     </h3>
+                    
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                      {product.description}
+                    </p>
 
                     <div className="flex items-center mb-4">
                       <span className="text-lg font-bold text-modern-primary">
                         ₹{discountedPrice.toFixed(2)}
                       </span>
-                      {product.offer && (
+                      {product.offer && parseInt(product.offer) > 0 && (
                         <span className="text-sm text-gray-500 line-through ml-2">
                           ₹{product.price.toFixed(2)}
+                        </span>
+                      )}
+                      
+                      {product.stock_uom && (
+                        <span className="text-xs text-gray-500 ml-1">
+                          /{product.stock_uom}
                         </span>
                       )}
                     </div>
 
                     <button
-                      onClick={() =>
-                        addToCart({
-                          ...product,
-                          name: product.title,
-                          image: product.image_url,
-                        })
-                      }
-                      className="w-full flex items-center justify-center bg-gradient-to-r from-modern-primary to-modern-secondary text-white py-2 rounded-md hover:shadow-lg transition-all duration-300"
+                      onClick={() => addToCart(product)}
+                      className="w-full flex items-center justify-center py-2 rounded-md bg-gradient-to-r from-modern-primary to-modern-secondary hover:shadow-lg text-white transition-all duration-300"
                     >
                       <ShoppingCart className="w-4 h-4 mr-2" />
                       Add to Cart

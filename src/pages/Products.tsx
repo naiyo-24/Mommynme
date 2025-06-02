@@ -225,7 +225,8 @@ export default function Products() {
               
               // Additional useful fields
               offer: offer,
-              in_stock: parseInt(item.opening_stock || "0", 10) > 0 && item.disabled !== 1
+              // Always set products to be in stock
+              in_stock: true
             };
           });
         
@@ -424,7 +425,8 @@ export default function Products() {
             {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map((product, index) => {
-                const isOutOfStock = product.quantity <= 0;
+                // All products are always in stock
+                const isOutOfStock = false;
                 const hasColors = product.colors && product.colors.length > 0;
                 const discountedPrice = calculateDiscountedPrice(product.price, product.offer);
 
@@ -487,11 +489,7 @@ export default function Products() {
 
                       {/* Product Badges */}
                       <div className="absolute top-2 left-2 flex flex-col gap-2">
-                        {isOutOfStock && (
-                          <div className="out-of-stock-badge">
-                            Out of Stock
-                          </div>
-                        )}
+                        {/* Stock badge removed - all products always in stock */}
                         {product.offer && (
                           <div className="sale-badge">
                             {product.offer}% OFF
@@ -590,14 +588,9 @@ export default function Products() {
                         </div>
                         <button
                           onClick={() => handleAddToCart(product)}
-                          disabled={isOutOfStock}
-                          className={`px-4 py-2 rounded-md ${
-                            isOutOfStock
-                              ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-gradient-to-r from-modern-primary to-modern-secondary hover:shadow-lg text-white transition-all duration-300"
-                          }`}
+                          className="px-4 py-2 rounded-md bg-gradient-to-r from-modern-primary to-modern-secondary hover:shadow-lg text-white transition-all duration-300"
                         >
-                          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                          Add to Cart
                         </button>
                       </div>
                     </div>
