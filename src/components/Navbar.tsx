@@ -55,64 +55,85 @@ const Navbar: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Add scroll effect for navbar
+  const [scrolled, setScrolled] = useState(false);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <nav className="navbar fixed top-0 left-0 w-full z-50 px-4 py-4 shadow-md bg-[#cbb3e3]">
+    <nav className={`navbar fixed top-0 left-0 w-full z-50 px-4 py-3 transition-all duration-300 ${scrolled ? 'scrolled' : ''}`}>
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden self-start"
+          className="md:hidden self-start bg-glass-100 backdrop-blur-sm p-2 rounded-lg transition-all duration-300 hover:bg-glass-200"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle mobile menu"
           aria-expanded={isMenuOpen}
         >
-          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMenuOpen ? <X className="w-6 h-6 text-modern-dark" /> : <Menu className="w-6 h-6 text-modern-dark" />}
         </button>
 
         {/* Centered Logo & Navigation */}
-        <div className="flex-1 flex flex-col items-center space-y-2 md:space-y-4">
-          <Link to="/" className="flex items-center space-x-2" aria-label="Home">
-            <img src={icon} alt="Mommy n Me Logo" className="w-14 h-10" />
-            <span className="text-3xl font-title1 font-bold text-gray-900">
+        <div className="flex-1 flex flex-col md:flex-row items-center md:items-center md:justify-between space-y-2 md:space-y-0">
+          <Link to="/" className="flex items-center space-x-2 hover-lift" aria-label="Home">
+            <div className="bg-glass-200 backdrop-blur-sm p-2 rounded-full shadow-glass-sm">
+              <img src={icon} alt="Mommy n Me Logo" className="w-10 h-10 object-contain" />
+            </div>
+            <span className="text-3xl font-title1 font-bold bg-gradient-to-r from-modern-primary to-modern-secondary bg-clip-text text-transparent">
               Mommy n Me
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-7">
+          <div className="hidden md:flex items-center space-x-1 bg-glass-100 backdrop-blur-sm rounded-full px-2 py-1 shadow-glass-sm">
             {NAV_ITEMS.map(({ path, label }) => (
               <Link
                 key={path}
                 to={path}
-                className={`hover:text-purple-500 relative ${
-                  isActive(path) ? 'text-purple-700 font-semibold' : ''
+                className={`relative px-5 py-2 rounded-full transition-all duration-300 ${
+                  isActive(path) 
+                    ? 'bg-modern-primary text-white font-medium shadow-md' 
+                    : 'text-modern-dark/80 hover:bg-glass-200'
                 }`}
                 aria-current={isActive(path) ? "page" : undefined}
               >
                 {label}
-                {isActive(path) && (
-                  <span className="absolute -bottom-2 left-0 w-full h-1 bg-purple-700 rounded-full" />
-                )}
               </Link>
             ))}
           </div>
         </div>
 
         {/* Icons */}
-        <div className="flex items-center space-x-4 md:absolute md:right-6">
+        <div className="flex items-center space-x-2">
           <a
             href="https://www.instagram.com/_mommy.n.me_"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
-            className="text-customPink hover:text-customGreen transition-colors"
+            className="bg-glass-100 backdrop-blur-sm p-2 rounded-full transition-all duration-300 hover:bg-glass-200 hover:shadow-glass-sm hover-lift"
           >
-            <Instagram className="w-6 h-6" />
+            <Instagram className="w-5 h-5 text-modern-primary" />
           </a>
 
-          <Link to="/cart" className="relative" aria-label="Cart">
-            <ShoppingCart className="w-6 h-6 text-customPink hover:text-customGreen" />
+          <Link 
+            to="/cart" 
+            className="bg-glass-100 backdrop-blur-sm p-2 rounded-full transition-all duration-300 hover:bg-glass-200 hover:shadow-glass-sm relative hover-lift" 
+            aria-label="Cart"
+          >
+            <ShoppingCart className="w-5 h-5 text-modern-primary" />
             {cartItemsCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-modern-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md animate-pulse-soft">
                 {cartItemsCount}
               </span>
             )}
@@ -123,14 +144,20 @@ const Navbar: React.FC = () => {
               <Link 
                 to="/profile" 
                 aria-label="Profile"
-                className="text-customPink hover:text-customGreen transition-colors"
+                className="bg-glass-100 backdrop-blur-sm p-2 rounded-full transition-all duration-300 hover:bg-glass-200 hover:shadow-glass-sm block hover-lift"
               >
-                <User className="w-6 h-6" />
+                <User className="w-5 h-5 text-modern-primary" />
               </Link>
-              <div className="absolute right-0 hidden group-hover:block bg-white shadow-lg rounded-lg p-2 w-40">
+              <div className="absolute right-0 mt-2 hidden group-hover:block bg-glass-300 backdrop-blur-md rounded-lg shadow-glass border border-white/20 overflow-hidden transform origin-top-right transition-all duration-300 animate-fade-in">
+                <Link 
+                  to="/profile"
+                  className="block px-4 py-2 text-sm text-modern-dark hover:bg-glass-400 transition-all duration-200"
+                >
+                  My Profile
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center text-red-500 hover:text-red-700 px-2 py-1 text-sm"
+                  className="w-full flex items-center px-4 py-2 text-sm text-red-500 hover:bg-glass-400 transition-all duration-200"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
@@ -141,9 +168,9 @@ const Navbar: React.FC = () => {
             <Link 
               to="/login" 
               aria-label="Login"
-              className="text-customPink hover:text-customGreen transition-colors"
+              className="bg-glass-100 backdrop-blur-sm p-2 rounded-full transition-all duration-300 hover:bg-glass-200 hover:shadow-glass-sm hover-lift"
             >
-              <User className="w-6 h-6" />
+              <User className="w-5 h-5 text-modern-primary" />
             </Link>
           )}
         </div>
@@ -151,7 +178,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden fixed top-16 left-0 w-full bg-[#cbb3e3] shadow-lg">
+        <div className="mobile-menu md:hidden">
           {[...NAV_ITEMS, { 
             path: isLoggedIn ? '/profile' : '/login', 
             label: isLoggedIn ? 'Profile' : 'Login' 
@@ -159,9 +186,7 @@ const Navbar: React.FC = () => {
             <Link
               key={path}
               to={path}
-              className={`block px-6 py-3 text-lg hover:bg-purple-100 ${
-                isActive(path) ? 'text-purple-700 font-semibold' : 'text-gray-900'
-              }`}
+              className={isActive(path) ? 'active' : ''}
               onClick={() => setIsMenuOpen(false)}
               aria-current={isActive(path) ? "page" : undefined}
             >
@@ -174,7 +199,7 @@ const Navbar: React.FC = () => {
                 handleLogout();
                 setIsMenuOpen(false);
               }}
-              className="block w-full text-left px-6 py-3 text-lg hover:bg-purple-100 text-gray-900"
+              className="w-80% px-4 py-2 mt-2 text-red-500 border border-red-100 rounded-lg bg-red-50/50 backdrop-blur-sm hover:bg-red-100/50 transition-all duration-200"
             >
               Sign Out
             </button>

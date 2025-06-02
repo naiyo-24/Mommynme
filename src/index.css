@@ -3,10 +3,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Modern smooth scrolling for better user experience */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Base styles for the modern UI */
+body {
+  padding-top: 80px; /* Adjust this value based on the height of your navbar */
+  @apply bg-modern-neutral text-modern-dark;
+}
+
+/* Enhanced animations */
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(2rem);
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -17,9 +49,11 @@
 @keyframes zoom-out {
   from {
     transform: scale(1.05);
+    opacity: 0;
   }
   to {
     transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -30,6 +64,45 @@
   50% {
     transform: translateX(0.25rem);
   }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Glassmorphic effects */
+.glass {
+  @apply bg-white/20 backdrop-blur-lg border border-white/20 shadow-glass;
+}
+
+.glass-card {
+  @apply bg-glass-200 backdrop-blur-md rounded-xl border border-white/20 shadow-glass transition-all duration-300;
+}
+
+.glass-card:hover {
+  @apply shadow-glass-lg transform -translate-y-1;
+}
+
+.glass-button {
+  @apply bg-glass-200 backdrop-blur-sm rounded-xl border border-white/10 shadow-glass-sm transition-all duration-300;
+}
+
+.glass-button:hover {
+  @apply bg-glass-300 shadow-glass transform -translate-y-0.5;
+}
+
+/* Custom button styles with modern effects */
+.btn-modern {
+  @apply px-6 py-2.5 rounded-xl transition-all duration-300 font-medium;
+}
+
+.btn-primary {
+  @apply bg-modern-primary text-white hover:bg-modern-primary/90 shadow-md hover:shadow-lg hover:-translate-y-0.5;
 }
 
 .animate-on-scroll {
@@ -45,6 +118,7 @@
   font-family: 'Tangerine', serif;
   font-weight: bold; /* Make it bold */
 }
+
 /* Ensure the navbar is responsive */
 @media (max-width: 1023px) {
   .lg\\:hidden {
@@ -52,58 +126,131 @@
   }
 }
 
-/* Mobile dropdown menu styles */
+/* Mobile dropdown menu styles - updated with glassmorphism */
 .mobile-menu {
   display: flex;
   flex-direction: column;
-  background-color: #cbb3e3;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: 1rem;
   position: absolute;
   top: 100%;
   left: 0;
   width: 100%;
   z-index: 10;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .mobile-menu a {
-  padding: 0.5rem 1rem;
-  color: #1a1a1a;
+  padding: 0.75rem 2rem;
+  color: #2d2d38; /* Modern dark color */
   text-decoration: none;
   font-size: 1.1rem;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  width: 80%;
+  text-align: center;
+  margin: 0.25rem auto;
 }
 
 .mobile-menu a:hover {
-  color: #6b46c1;
+  background-color: rgba(136, 104, 223, 0.1);
+  color: #8868df; /* Modern primary color */
+  transform: translateY(-2px);
 }
 
-/* Add this to your global CSS file (e.g., index.css or App.css) */
-body {
-  padding-top: 80px; /* Adjust this value based on the height of your navbar */
+.mobile-menu a.active {
+  background-color: #8868df;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(136, 104, 223, 0.2);
 }
 
-/* Custom styles for Swiper navigation arrows */
+/* Custom styles for Swiper navigation arrows - updated with glassmorphism */
 .swiper-button-next,
 .swiper-button-prev {
-  color: #000; /* Arrow color */
-  background-color: rgba(255, 255, 255, 0.8); /* Background color */
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #8868df !important; /* Arrow color - modern primary */
+  background-color: rgba(255, 255, 255, 0.7) !important; /* Glass effect */
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  transition: all 0.3s ease !important;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
+  transform: scale(1.05) !important;
 }
 
 .swiper-button-next::after,
 .swiper-button-prev::after {
-  font-size: 20px; /* Arrow size */
+  font-size: 18px !important; /* Arrow size */
+  font-weight: bold !important;
 }
 
-.swiper-button-next {
-  right: 10px; /* Position from the right */
+.swiper-pagination-bullet {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  opacity: 0.7 !important;
 }
 
-.swiper-button-prev {
-  left: 10px; /* Position from the left */
+.swiper-pagination-bullet-active {
+  background-color: #8868df !important; /* Modern primary */
+  opacity: 1 !important;
+}
+
+/* Improve form elements with glassmorphism */
+input, select, textarea {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 0.75rem !important;
+  transition: all 0.3s ease !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  box-shadow: 0 0 0 3px rgba(136, 104, 223, 0.25) !important;
+  border-color: #8868df !important;
+  outline: none !important;
+}
+
+/* Product card hover effects */
+.product-card {
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Accessible focus styles */
+:focus-visible {
+  outline: 2px solid #8868df !important;
+  outline-offset: 2px !important;
+}
+
+/* Animation classes */
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out forwards;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

@@ -10,6 +10,8 @@ import debounce from "lodash.debounce";
 import ImageModal from "../components/ImageModal";
 import { useLocation } from "react-router-dom";
 import "./Slider.css";
+import "../styles/glassmorphism.css";
+import { motion } from "framer-motion";
 
 interface Product {
   id: string;
@@ -163,26 +165,38 @@ export default function Products() {
   };
 
   return (
-    <div style={{ backgroundColor: "#E6E6FA" }} className="min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 bg-gradient-to-br from-modern-primary/5 to-modern-secondary/10 relative">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="blur-circle w-72 h-72 bg-modern-accent/20 top-[5%] right-[10%]"></div>
+        <div className="blur-circle w-96 h-96 bg-modern-secondary/15 bottom-[10%] left-[5%]"></div>
+        <div className="blur-circle w-64 h-64 bg-modern-primary/15 top-[40%] left-[20%] float"></div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Filters Sidebar */}
-          <div
-            className={`w-full md:w-64 bg-white p-6 rounded-lg shadow-md h-fit transition-transform duration-300 ${
-              showFilters ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-            }`}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ 
+              opacity: 1, 
+              x: 0,
+              translateX: showFilters || window.innerWidth >= 768 ? 0 : "-100%" 
+            }}
+            transition={{ duration: 0.4 }}
+            className={`w-full md:w-64 glass-card p-6 h-fit`}
           >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-semibold text-lg">Filters</h3>
-              <Filter className="w-5 h-5 text-gray-500" />
+              <h3 className="font-semibold text-lg text-modern-primary">Filters</h3>
+              <Filter className="w-5 h-5 text-modern-secondary" />
             </div>
 
             <div className="space-y-6">
               <div>
-                <h4 className="font-medium mb-3">Categories</h4>
+                <h4 className="font-medium mb-3 text-gray-700">Categories</h4>
                 <div className="space-y-2">
                   {Array.from(new Set(products.map(p => p.category))).map(category => (
-                    <label key={category} className="flex items-center cursor-pointer">
+                    <label key={category} className="flex items-center cursor-pointer hover:text-modern-primary transition-colors">
                       <input
                         type="checkbox"
                         checked={selectedCategories.includes(category)}
@@ -193,7 +207,7 @@ export default function Products() {
                               : [...prev, category]
                           )
                         }
-                        className="w-4 h-4 accent-purple-600 border-gray-300 rounded"
+                        className="w-4 h-4 accent-modern-primary border-gray-300 rounded"
                       />
                       <span className="ml-2 text-gray-600">{category}</span>
                     </label>
@@ -202,7 +216,7 @@ export default function Products() {
               </div>
 
               <div>
-                <h4 className="font-medium mb-3">Price Range</h4>
+                <h4 className="font-medium mb-3 text-gray-700">Price Range</h4>
                 <div className="space-y-2">
                   <input
                     type="range"
@@ -210,7 +224,11 @@ export default function Products() {
                     max="2000"
                     value={priceRange}
                     onChange={(e) => setPriceRange(Number(e.target.value))}
-                    className="w-full custom-slider purple-slider"
+                    className="w-full custom-slider"
+                    style={{
+                      "--range-color": "var(--color-modern-primary)", 
+                      accentColor: "var(--color-modern-primary)"
+                    } as any}
                   />
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>₹0</span>
@@ -219,16 +237,21 @@ export default function Products() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Main Content */}
           <div className="flex-1">
             {/* Search and Sort */}
-            <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="glass-card p-4 mb-6"
+            >
               <div className="flex flex-col md:flex-row gap-4">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="md:hidden flex items-center justify-center w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                  className="md:hidden flex items-center justify-center w-full bg-gradient-to-r from-modern-primary to-modern-secondary text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-300"
                 >
                   <Filter className="w-5 h-5 mr-2" />
                   {showFilters ? "Hide Filters" : "Show Filters"}
@@ -239,7 +262,7 @@ export default function Products() {
                     type="text"
                     placeholder="Search products..."
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-1 focus:ring-purple-500 focus:border-purple"
+                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:ring-1 focus:ring-modern-primary focus:border-modern-primary bg-white/70"
                   />
                   <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                 </div>
@@ -247,7 +270,7 @@ export default function Products() {
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
-                  className="px-4 py-2 rounded-lg border focus:ring-1 focus:ring-purple-500 focus:border-purple"
+                  className="px-4 py-2 rounded-lg border border-gray-200 focus:ring-1 focus:ring-modern-primary focus:border-modern-primary bg-white/70"
                 >
                   <option value="featured">Sort by: Featured</option>
                   <option value="price-low-to-high">Price: Low to High</option>
@@ -255,17 +278,23 @@ export default function Products() {
                   <option value="newest-first">Newest First</option>
                 </select>
               </div>
-            </div>
+            </motion.div>
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => {
+              {filteredProducts.map((product, index) => {
                 const isOutOfStock = product.quantity <= 0;
                 const hasColors = product.colors && product.colors.length > 0;
                 const discountedPrice = calculateDiscountedPrice(product.price, product.offer);
 
                 return (
-                  <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full hover:shadow-lg transition-shadow relative">
+                  <motion.div 
+                    key={product.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 % 0.5 }}
+                    className="glass-card overflow-hidden flex flex-col h-full group relative"
+                  >
                     {/* Product Image Slider */}
                     <div className="relative h-48">
                       <Swiper
@@ -316,18 +345,18 @@ export default function Products() {
                       <div className={`swiper-button-prev swiper-button-prev-${product.id}`}></div>
 
                       {isOutOfStock && (
-                        <div className="absolute top-2 left-2 bg-gray-600 text-white text-sm px-2 py-1 rounded-full">
+                        <div className="absolute top-2 left-2 bg-gray-600/90 backdrop-blur-sm text-white text-sm px-2 py-1 rounded-full">
                           Out of Stock
                         </div>
                       )}
                     </div>
 
                     {/* Product Details */}
-                    <div className="p-4 flex flex-col flex-grow">
+                    <div className="p-4 flex flex-col flex-grow bg-white/30 backdrop-blur-sm">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-lg font-semibold">{product.name}</h3>
                         {product.offer && (
-                          <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                          <span className="bg-gradient-to-r from-modern-accent to-modern-accent/80 text-white text-xs font-medium px-2.5 py-0.5 rounded-full shadow-sm">
                             {product.offer}% OFF
                           </span>
                         )}
@@ -343,10 +372,10 @@ export default function Products() {
                               <button
                                 key={color}
                                 onClick={() => handleColorSelect(product.id, color)}
-                                className={`w-6 h-6 rounded-full border-2 transition-all ${
+                                className={`w-6 h-6 rounded-full transition-all ${
                                   selectedColors[product.id] === color
-                                    ? "border-black scale-110"
-                                    : "border-gray-300 hover:border-gray-500"
+                                    ? "ring-2 ring-offset-2 ring-modern-primary scale-110"
+                                    : "border border-gray-300 hover:border-gray-500"
                                 }`}
                                 style={{ backgroundColor: colorPalette[color] || color }}
                                 title={color}
@@ -360,7 +389,7 @@ export default function Products() {
                         <div>
                           {product.offer ? (
                             <>
-                              <span className="font-bold text-lg text-purple-600">
+                              <span className="font-bold text-lg text-modern-primary">
                                 ₹{discountedPrice.toFixed(2)}
                               </span>
                               <span className="text-sm text-gray-400 line-through ml-2">
@@ -368,7 +397,7 @@ export default function Products() {
                               </span>
                             </>
                           ) : (
-                            <span className="font-bold text-lg text-purple-600">
+                            <span className="font-bold text-lg text-modern-primary">
                               ₹{product.price.toFixed(2)}
                             </span>
                           )}
@@ -379,17 +408,29 @@ export default function Products() {
                           className={`px-4 py-2 rounded-md ${
                             isOutOfStock
                               ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-purple-600 hover:bg-purple-700 text-white"
+                              : "bg-gradient-to-r from-modern-primary to-modern-secondary hover:shadow-lg text-white transition-all duration-300"
                           }`}
                         >
                           {isOutOfStock ? "Out of Stock" : "Add to Cart"}
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
+            
+            {filteredProducts.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="glass-card p-8 text-center"
+              >
+                <h3 className="text-xl font-medium text-gray-700 mb-2">No products found</h3>
+                <p className="text-gray-500">Try adjusting your filters or search terms</p>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>

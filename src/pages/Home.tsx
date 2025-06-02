@@ -7,6 +7,8 @@ import { CartContext } from "../components/CartContext";
 import { ArrowRight, ShoppingCart, ChevronRight } from "lucide-react";
 import { MediaCoverageSection } from "../components/MediaCoverageSection";
 import { BrandCollaborationSection } from "../components/BrandCollaborationSection";
+import "../styles/glassmorphism.css";
+import { motion } from "framer-motion";
 
 interface Poster {
   id: string;
@@ -198,14 +200,23 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-600"></div>
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-modern-primary/5 to-modern-secondary/10">
+        <div className="glass-card p-8 rounded-full">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-modern-primary"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gradient-to-br from-modern-primary/5 to-modern-secondary/10 overflow-hidden relative">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="blur-circle w-64 h-64 bg-modern-accent/20 top-0 left-[10%]"></div>
+        <div className="blur-circle w-96 h-96 bg-modern-primary/20 bottom-0 right-[5%]"></div>
+        <div className="blur-circle w-72 h-72 bg-modern-secondary/20 top-[30%] right-[20%] float"></div>
+      </div>
+      
       {/* Hero Slider Section */}
       {poster && (
         <section className="relative h-[70vh] md:h-screen">
@@ -222,80 +233,138 @@ export default function Home() {
                       e.currentTarget.src = "https://placehold.co/600x400";
                     }}
                   />
-                  <div className="absolute inset-0 bg-black/40" />
+                  <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
                 </div>
               )
             )}
           </Slider>
 
-          <div className="absolute inset-0 flex items-center justify-center text-center z-10 px-4">
-            <div className="max-w-2xl">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 md:mb-6">
-                {poster.title}
-              </h1>
-              <p className="text-lg sm:text-xl text-white/90 mb-6 md:mb-8">
-                {poster.description}
-              </p>
-              <Link
-                to="/products"
-                className="inline-flex bg-pink-600 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold items-center space-x-2 hover:bg-pink-700 transition-all duration-300 hover:scale-105"
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="absolute inset-0 flex items-center justify-center text-center z-10 px-4"
+          >
+            <div className="max-w-2xl glass-card p-8 md:p-12">
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 md:mb-6"
               >
-                <span>Shop Now</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
+                {poster.title}
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="text-lg sm:text-xl text-white/90 mb-6 md:mb-8"
+              >
+                {poster.description}
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <Link
+                  to="/products"
+                  className="inline-flex bg-gradient-to-r from-modern-primary to-modern-secondary text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold items-center space-x-2 hover:shadow-lg transition-all duration-300"
+                >
+                  <span>Shop Now</span>
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </section>
       )}
 
       {/* Trust Badges Section */}
-      {/* <div className="bg-white py-6">
+      <div className="bg-white/30 backdrop-blur-md py-8 border-t border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="p-4">
-              <div className="text-2xl font-bold text-pink-600">100%</div>
-              <div className="text-sm text-gray-600">Handmade</div>
-            </div>
-            <div className="p-4">
-              <div className="text-2xl font-bold text-pink-600">500+</div>
-              <div className="text-sm text-gray-600">Happy Customers</div>
-            </div>
-            <div className="p-4">
-              <div className="text-2xl font-bold text-pink-600">Free</div>
-              <div className="text-sm text-gray-600">Shipping Over ₹999</div>
-            </div>
-            <div className="p-4">
-              <div className="text-2xl font-bold text-pink-600">Easy</div>
-              <div className="text-sm text-gray-600">Returns</div>
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="p-4 glass-card hover-lift"
+            >
+              <div className="text-2xl font-bold text-modern-primary">100%</div>
+              <div className="text-sm text-gray-700">Handmade</div>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="p-4 glass-card hover-lift"
+            >
+              <div className="text-2xl font-bold text-modern-primary">500+</div>
+              <div className="text-sm text-gray-700">Happy Customers</div>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="p-4 glass-card hover-lift"
+            >
+              <div className="text-2xl font-bold text-modern-primary">Free</div>
+              <div className="text-sm text-gray-700">Shipping Over ₹999</div>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="p-4 glass-card hover-lift"
+            >
+              <div className="text-2xl font-bold text-modern-primary">Easy</div>
+              <div className="text-sm text-gray-700">Returns</div>
+            </motion.div>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Best Sellers Section */}
-      <section className="py-12 md:py-20 bg-gray-50">
+      <section className="py-12 md:py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl sm:text-4xl font-bold">Best Sellers</h2>
+            <motion.h2 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="text-3xl sm:text-4xl font-bold relative"
+            >
+              Best Sellers
+              <div className="absolute -bottom-2 left-0 h-1 w-24 bg-gradient-to-r from-modern-primary to-modern-accent"></div>
+            </motion.h2>
             <Link
               to="/products"
-              className="flex items-center text-pink-600 hover:text-pink-800"
+              className="flex items-center text-modern-primary hover:text-modern-secondary"
             >
               View All <ChevronRight className="ml-1" />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {bestSellers.map((product) => {
+            {bestSellers.map((product, index) => {
               const discountedPrice = calculateDiscountedPrice(
                 product.price,
                 product.offer
               );
 
               return (
-                <div
+                <motion.div
                   key={product.id}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="glass-card overflow-hidden group"
                 >
                   <div className="relative overflow-hidden">
                     <img
@@ -307,19 +376,19 @@ export default function Home() {
                       }}
                     />
                     {product.offer && (
-                      <div className="absolute top-4 right-4 bg-pink-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      <div className="absolute top-4 right-4 bg-gradient-to-r from-modern-accent to-modern-accent/80 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                         {product.offer}% OFF
                       </div>
                     )}
                   </div>
 
-                  <div className="p-6">
+                  <div className="p-6 bg-white/30 backdrop-blur-sm">
                     <h3 className="text-xl font-semibold mb-2 line-clamp-1">
                       {product.title}
                     </h3>
 
                     <div className="flex items-center mb-4">
-                      <span className="text-lg font-bold text-pink-600">
+                      <span className="text-lg font-bold text-modern-primary">
                         ₹{discountedPrice.toFixed(2)}
                       </span>
                       {product.offer && (
@@ -337,13 +406,13 @@ export default function Home() {
                           image: product.image_url,
                         })
                       }
-                      className="w-full flex items-center justify-center bg-pink-600 text-white py-2 rounded-md hover:bg-pink-700 transition-colors"
+                      className="w-full flex items-center justify-center bg-gradient-to-r from-modern-primary to-modern-secondary text-white py-2 rounded-md hover:shadow-lg transition-all duration-300"
                     >
                       <ShoppingCart className="w-4 h-4 mr-2" />
                       Add to Cart
                     </button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -351,19 +420,35 @@ export default function Home() {
       </section>
 
       {/* Shop by Category Section */}
-      <section className="py-12 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8 md:mb-12">
+      <section className="py-12 md:py-20 bg-white/20 backdrop-blur-md relative">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="blur-circle w-80 h-80 bg-modern-secondary/20 top-[10%] left-[5%]"></div>
+          <div className="blur-circle w-96 h-96 bg-modern-primary/20 bottom-[10%] right-[15%]"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl sm:text-4xl font-bold text-center mb-8 md:mb-12 relative inline-block mx-auto"
+          >
             Shop by Category
-          </h2>
+            <div className="absolute -bottom-3 left-0 right-0 h-1 mx-auto w-48 bg-gradient-to-r from-modern-accent to-modern-primary"></div>
+          </motion.h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-            {categories.map((category) => (
-              <div
+            {categories.map((category, index) => (
+              <motion.div
                 key={category.id}
-                className="group cursor-pointer"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="group cursor-pointer hover-lift"
                 onClick={() => handleCategoryClick(category.category)}
               >
-                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3">
+                <div className="aspect-square glass-card overflow-hidden mb-3">
                   {category.image ? (
                     <img
                       src={category.image}
@@ -379,10 +464,10 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-                <h3 className="text-lg font-medium text-center group-hover:text-pink-600">
+                <h3 className="text-lg font-medium text-center group-hover:text-modern-primary transition-colors duration-300">
                   {category.category}
                 </h3>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

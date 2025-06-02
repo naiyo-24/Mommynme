@@ -145,79 +145,101 @@ const ProfilePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-purple-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-modern-primary/10 to-modern-secondary/10">
+        <div className="bg-glass-300 backdrop-blur-md p-8 rounded-3xl shadow-glass animate-pulse-soft flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-modern-primary"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-purple-50 pb-12">
-      {/* Profile Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 py-12 px-6 text-white">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center">
-          <div className="w-24 h-24 rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-4 md:mb-0 md:mr-6">
-            <User size={40} className="text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-modern-primary/5 to-modern-secondary/10 pb-12">
+      {/* Profile Header - Glassmorphic Enhancement */}
+      <div className="bg-gradient-to-r from-modern-primary to-modern-secondary relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-modern-accent/30 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-modern-primary/20 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="py-12 px-6 text-white relative z-10">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center backdrop-blur-sm">
+            <div className="w-24 h-24 rounded-full bg-glass-300 backdrop-blur-md flex items-center justify-center mb-4 md:mb-0 md:mr-6 shadow-glass border border-white/20 animate-fade-in">
+              <User size={40} className="text-white" />
+            </div>
+            <div className="flex-1 animate-slide-up">
+              <h1 className="text-3xl font-bold mb-1">{userProfile?.name}</h1>
+              <p className="text-white/90 mb-2">{userProfile?.email}</p>
+              <p className="text-white/80 text-sm">
+                Member since {userProfile?.joinDate} • {userProfile?.crochetSkill} Crocheter
+              </p>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="mt-4 md:mt-0 flex items-center text-white bg-glass-200 hover:bg-glass-300 px-5 py-2.5 rounded-xl transition-all duration-300 shadow-glass-sm border border-white/10 backdrop-blur-sm"
+            >
+              <LogOut size={18} className="mr-2" />
+              Sign Out
+            </button>
           </div>
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-1">{userProfile?.name}</h1>
-            <p className="text-purple-100 mb-2">{userProfile?.email}</p>
-            <p className="text-purple-100 text-sm">
-              Member since {userProfile?.joinDate} • {userProfile?.crochetSkill} Crocheter
-            </p>
-          </div>
-          <button 
-            onClick={handleLogout}
-            className="mt-4 md:mt-0 flex items-center text-white bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all"
-          >
-            <LogOut size={18} className="mr-2" />
-            Sign Out
-          </button>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-6 mt-8">
-        {/* Navigation Tabs */}
-        <div className="flex border-b border-purple-200 mb-8">
+        {/* Navigation Tabs - Glassmorphic Enhancement */}
+        <div className="flex backdrop-blur-sm bg-glass-200 rounded-2xl mb-8 p-1 shadow-glass border border-white/20 overflow-hidden">
           <button
             onClick={() => setActiveTab('orders')}
-            className={`px-6 py-3 font-medium flex items-center ${activeTab === 'orders' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-600 hover:text-purple-500'}`}
+            className={`flex-1 px-6 py-3 font-medium flex items-center justify-center rounded-xl transition-all duration-300 ${
+              activeTab === 'orders' 
+                ? 'bg-modern-primary text-white shadow-md' 
+                : 'text-modern-dark/70 hover:bg-glass-300'
+            }`}
           >
             <ShoppingBag size={18} className="mr-2" />
             My Orders
           </button>
           <button
             onClick={() => setActiveTab('offers')}
-            className={`px-6 py-3 font-medium flex items-center ${activeTab === 'offers' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-600 hover:text-purple-500'}`}
+            className={`flex-1 px-6 py-3 font-medium flex items-center justify-center rounded-xl transition-all duration-300 ${
+              activeTab === 'offers' 
+                ? 'bg-modern-primary text-white shadow-md' 
+                : 'text-modern-dark/70 hover:bg-glass-300'
+            }`}
           >
             <Gift size={18} className="mr-2" />
             My Offers
           </button>
           <button
             onClick={() => setActiveTab('profile')}
-            className={`px-6 py-3 font-medium flex items-center ${activeTab === 'profile' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-600 hover:text-purple-500'}`}
+            className={`flex-1 px-6 py-3 font-medium flex items-center justify-center rounded-xl transition-all duration-300 ${
+              activeTab === 'profile' 
+                ? 'bg-modern-primary text-white shadow-md' 
+                : 'text-modern-dark/70 hover:bg-glass-300'
+            }`}
           >
             <User size={18} className="mr-2" />
             Profile Info
           </button>
         </div>
 
-        {/* Tab Content */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        {/* Tab Content - Glassmorphic Enhancement */}
+        <div className="bg-glass-200 backdrop-blur-md rounded-3xl shadow-glass border border-white/20 overflow-hidden animate-fade-in">
           {/* Orders Tab */}
           {activeTab === 'orders' && (
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-purple-800 mb-6 flex items-center">
-                <ShoppingBag className="mr-2" /> Order History
+            <div className="p-8">
+              <h2 className="text-2xl font-bold text-modern-dark mb-8 flex items-center">
+                <ShoppingBag className="mr-3 text-modern-primary" /> Order History
               </h2>
               
               {orders.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-500">You haven't placed any orders yet</p>
+                <div className="text-center py-12 bg-glass-100 rounded-2xl backdrop-blur-sm">
+                  <p className="text-modern-dark/70 mb-4">You haven't placed any orders yet</p>
                   <button 
                     onClick={() => navigate('/products')}
-                    className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    className="px-8 py-3 bg-modern-primary text-white rounded-xl hover:bg-modern-primary/90 transition-all duration-300 shadow-md"
                   >
                     Browse Products
                   </button>
@@ -225,50 +247,53 @@ const ProfilePage: React.FC = () => {
               ) : (
                 <div className="space-y-6">
                   {orders.map((order) => (
-                    <div key={order.id} className="border border-purple-100 rounded-lg p-5 hover:shadow-md transition-shadow">
+                    <div 
+                      key={order.id} 
+                      className="border border-white/20 rounded-2xl p-6 hover:shadow-glass transition-all duration-300 bg-glass-100 backdrop-blur-sm group"
+                    >
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h3 className="font-bold text-lg">Order #{order.id}</h3>
-                          <p className="text-gray-500 text-sm">{order.date}</p>
+                          <h3 className="font-bold text-lg text-modern-dark">{order.id}</h3>
+                          <p className="text-modern-dark/60 text-sm">{order.date}</p>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                          order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' :
-                          'bg-yellow-100 text-yellow-800'
+                        <div className={`px-4 py-1.5 rounded-full text-sm font-medium shadow-glass-sm ${
+                          order.status === 'Delivered' ? 'bg-green-100/70 backdrop-blur-sm text-green-800 border border-green-200/50' :
+                          order.status === 'Shipped' ? 'bg-blue-100/70 backdrop-blur-sm text-blue-800 border border-blue-200/50' :
+                          'bg-yellow-100/70 backdrop-blur-sm text-yellow-800 border border-yellow-200/50'
                         }`}>
                           {order.status}
                         </div>
                       </div>
                       
-                      <div className="space-y-4 mb-4">
+                      <div className="space-y-5 mb-5">
                         {order.items.map((item, index) => (
-                          <div key={index} className="flex items-center">
-                            <div className="w-16 h-16 bg-purple-100 rounded-lg mr-4 overflow-hidden">
+                          <div key={index} className="flex items-center bg-glass-100 p-3 rounded-xl backdrop-blur-sm group-hover:bg-glass-200 transition-all duration-300">
+                            <div className="w-16 h-16 rounded-xl mr-4 overflow-hidden border border-white/30 shadow-glass-sm">
                               <img 
                                 src={item.image} 
                                 alt={item.name} 
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 onError={(e) => {
                                   e.currentTarget.src = 'https://placehold.co/600x400';
                                 }}
                               />
                             </div>
                             <div className="flex-1">
-                              <h4 className="font-medium">{item.name}</h4>
-                              <p className="text-gray-500 text-sm">Qty: {item.quantity}</p>
+                              <h4 className="font-medium text-modern-dark">{item.name}</h4>
+                              <p className="text-modern-dark/60 text-sm">Qty: {item.quantity}</p>
                             </div>
-                            <div className="text-purple-700 font-medium">${item.price.toFixed(2)}</div>
+                            <div className="text-modern-primary font-medium">${item.price.toFixed(2)}</div>
                           </div>
                         ))}
                       </div>
                       
-                      <div className="flex justify-between items-center pt-4 border-t border-purple-100">
-                        <button className="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                      <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                        <button className="text-modern-primary hover:text-modern-secondary text-sm font-medium transition-colors duration-300">
                           View Details
                         </button>
                         <div className="text-right">
-                          <p className="text-sm text-gray-500">Total</p>
-                          <p className="font-bold text-lg">${order.total.toFixed(2)}</p>
+                          <p className="text-sm text-modern-dark/60">Total</p>
+                          <p className="font-bold text-lg text-modern-dark">${order.total.toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
@@ -280,37 +305,46 @@ const ProfilePage: React.FC = () => {
 
           {/* Offers Tab */}
           {activeTab === 'offers' && (
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-purple-800 mb-6 flex items-center">
-                <Gift className="mr-2" /> My Special Offers
+            <div className="p-8">
+              <h2 className="text-2xl font-bold text-modern-dark mb-8 flex items-center">
+                <Gift className="mr-3 text-modern-primary" /> My Special Offers
               </h2>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {offers.map((offer) => (
-                  <div key={offer.id} className="border border-purple-200 rounded-xl p-5 bg-gradient-to-br from-purple-50 to-white hover:shadow-md transition-all">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-bold text-lg">{offer.title}</h3>
-                      <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                        {offer.discount}
-                      </span>
+                  <div 
+                    key={offer.id} 
+                    className="border border-white/20 rounded-2xl p-6 bg-glass-200 backdrop-blur-md hover:shadow-glass transition-all duration-300 group relative overflow-hidden"
+                  >
+                    {/* Background decorative elements */}
+                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-modern-accent/10 rounded-full blur-xl"></div>
+                    <div className="absolute -top-20 -left-20 w-40 h-40 bg-modern-primary/10 rounded-full blur-xl"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="font-bold text-lg text-modern-dark">{offer.title}</h3>
+                        <span className="bg-modern-primary text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md">
+                          {offer.discount}
+                        </span>
+                      </div>
+                      <p className="text-modern-dark/70 mb-4">{offer.description}</p>
+                      
+                      <div className="bg-glass-100 p-4 rounded-xl border border-white/20 mb-4 shadow-glass-sm backdrop-blur-sm">
+                        <p className="text-sm text-modern-dark/60 mb-1">Use code:</p>
+                        <p className="font-mono font-bold text-modern-primary text-lg tracking-wider">{offer.code}</p>
+                      </div>
+                      
+                      <p className="text-sm text-modern-dark/60">
+                        <span className="font-medium">Valid until:</span> {offer.validUntil}
+                      </p>
+                      
+                      <button 
+                        onClick={() => navigate('/products')}
+                        className="mt-5 w-full py-3 bg-modern-primary hover:bg-modern-primary/90 text-white rounded-xl transition-all duration-300 shadow-md group-hover:shadow-lg"
+                      >
+                        Shop Now
+                      </button>
                     </div>
-                    <p className="text-gray-600 mb-4">{offer.description}</p>
-                    
-                    <div className="bg-white p-3 rounded-lg border border-purple-100 mb-4">
-                      <p className="text-sm text-gray-500 mb-1">Use code:</p>
-                      <p className="font-mono font-bold text-purple-700 text-lg">{offer.code}</p>
-                    </div>
-                    
-                    <p className="text-sm text-gray-500">
-                      <span className="font-medium">Valid until:</span> {offer.validUntil}
-                    </p>
-                    
-                    <button 
-                      onClick={() => navigate('/products')}
-                      className="mt-4 w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-                    >
-                      Shop Now
-                    </button>
                   </div>
                 ))}
               </div>
@@ -319,60 +353,73 @@ const ProfilePage: React.FC = () => {
 
           {/* Profile Tab */}
           {activeTab === 'profile' && (
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-purple-800 mb-6 flex items-center">
-                <User className="mr-2" /> Profile Information
+            <div className="p-8">
+              <h2 className="text-2xl font-bold text-modern-dark mb-8 flex items-center">
+                <User className="mr-3 text-modern-primary" /> Profile Information
               </h2>
               
-              <div className="max-w-2xl">
-                <div className="bg-purple-50 rounded-xl p-6 mb-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="font-bold text-lg">Personal Details</h3>
-                    <button className="text-purple-600 hover:text-purple-800 flex items-center">
-                      <Edit size={16} className="mr-1" /> Edit
-                    </button>
-                  </div>
+              <div className="max-w-2xl space-y-6">
+                <div className="bg-glass-200 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-glass-sm relative overflow-hidden">
+                  {/* Background decorative element */}
+                  <div className="absolute -top-20 -right-20 w-40 h-40 bg-modern-primary/10 rounded-full blur-xl"></div>
                   
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Full Name</p>
-                      <p className="font-medium">{userProfile?.name}</p>
+                  <div className="relative z-10">
+                    <div className="flex justify-between items-start mb-6">
+                      <h3 className="font-bold text-lg text-modern-dark">Personal Details</h3>
+                      <button 
+                        onClick={() => setEditMode(!editMode)}
+                        className="text-modern-primary hover:text-modern-secondary flex items-center transition-colors duration-300 bg-glass-100 px-4 py-2 rounded-xl border border-white/20 shadow-glass-sm"
+                      >
+                        <Edit size={16} className="mr-1.5" /> Edit
+                      </button>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Email</p>
-                      <p className="font-medium">{userProfile?.email}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Member Since</p>
-                      <p className="font-medium">{userProfile?.joinDate}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Crochet Skill Level</p>
-                      <p className="font-medium">{userProfile?.crochetSkill}</p>
+                    
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="bg-glass-100 p-4 rounded-xl border border-white/10">
+                        <p className="text-sm text-modern-dark/60 mb-1">Full Name</p>
+                        <p className="font-medium text-modern-dark">{userProfile?.name}</p>
+                      </div>
+                      <div className="bg-glass-100 p-4 rounded-xl border border-white/10">
+                        <p className="text-sm text-modern-dark/60 mb-1">Email</p>
+                        <p className="font-medium text-modern-dark">{userProfile?.email}</p>
+                      </div>
+                      <div className="bg-glass-100 p-4 rounded-xl border border-white/10">
+                        <p className="text-sm text-modern-dark/60 mb-1">Member Since</p>
+                        <p className="font-medium text-modern-dark">{userProfile?.joinDate}</p>
+                      </div>
+                      <div className="bg-glass-100 p-4 rounded-xl border border-white/10">
+                        <p className="text-sm text-modern-dark/60 mb-1">Crochet Skill Level</p>
+                        <p className="font-medium text-modern-dark">{userProfile?.crochetSkill}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-purple-50 rounded-xl p-6">
-                  <h3 className="font-bold text-lg mb-4">Preferences</h3>
+                <div className="bg-glass-200 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-glass-sm relative overflow-hidden">
+                  {/* Background decorative element */}
+                  <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-modern-accent/10 rounded-full blur-xl"></div>
                   
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Favorite Yarn Type</p>
-                      <p className="font-medium">{userProfile?.favoriteYarn}</p>
+                  <div className="relative z-10">
+                    <h3 className="font-bold text-lg mb-6 text-modern-dark">Preferences</h3>
+                    
+                    <div className="grid md:grid-cols-2 gap-8 mb-6">
+                      <div className="bg-glass-100 p-4 rounded-xl border border-white/10">
+                        <p className="text-sm text-modern-dark/60 mb-1">Favorite Yarn Type</p>
+                        <p className="font-medium text-modern-dark">{userProfile?.favoriteYarn}</p>
+                      </div>
+                      <div className="bg-glass-100 p-4 rounded-xl border border-white/10">
+                        <p className="text-sm text-modern-dark/60 mb-1">Newsletter Subscription</p>
+                        <p className="font-medium text-modern-dark">Subscribed</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Newsletter Subscription</p>
-                      <p className="font-medium">Subscribed</p>
-                    </div>
+                    
+                    <button 
+                      onClick={() => alert('Update preferences functionality would go here')}
+                      className="px-8 py-3 bg-modern-primary hover:bg-modern-primary/90 text-white rounded-xl transition-all duration-300 shadow-md"
+                    >
+                      Update Preferences
+                    </button>
                   </div>
-                  
-                  <button 
-                    onClick={() => alert('Update preferences functionality would go here')}
-                    className="mt-6 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-                  >
-                    Update Preferences
-                  </button>
                 </div>
               </div>
             </div>
