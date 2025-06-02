@@ -1,12 +1,12 @@
 import { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { CartContext } from "../components/CartContext";
-import { ArrowRight, ShoppingCart, ChevronRight } from "lucide-react";
+import { ShoppingCart, ChevronRight } from "lucide-react";
 import { MediaCoverageSection } from "../components/MediaCoverageSection";
 import { BrandCollaborationSection } from "../components/BrandCollaborationSection";
+import HeroSection from "../components/HeroSection";
 import "../styles/glassmorphism.css";
 import { motion } from "framer-motion";
 
@@ -314,68 +314,13 @@ export default function Home() {
         <div className="blur-circle w-72 h-72 bg-modern-secondary/20 top-[30%] right-[20%] float"></div>
       </div>
       
-      {/* Hero Slider Section */}
+      {/* Hero Section */}
       {poster && (
-        <section className="relative h-[70vh] md:h-screen">
-          <Slider {...posterSliderSettings}>
-            {[poster.image_url, poster.image2, poster.image3]
-              .filter(img => img) // Filter out empty strings
-              .map((image, index) => (
-                <div key={index} className="w-full h-[70vh] md:h-screen">
-                  <img
-                    src={image}
-                    alt={`Poster ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://placehold.co/600x400";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-                </div>
-              )
-            )}
-          </Slider>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="absolute inset-0 flex items-center justify-center text-center z-10 px-4"
-          >
-            <div className="max-w-2xl glass-card p-8 md:p-12">
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 md:mb-6"
-              >
-                {poster.title}
-              </motion.h1>
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="text-lg sm:text-xl text-white/90 mb-6 md:mb-8"
-              >
-                {poster.description}
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.7 }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <Link
-                  to="/products"
-                  className="inline-flex bg-gradient-to-r from-modern-primary to-modern-secondary text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold items-center space-x-2 hover:shadow-lg transition-all duration-300"
-                >
-                  <span>Shop Now</span>
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              </motion.div>
-            </div>
-          </motion.div>
-        </section>
+        <HeroSection 
+          images={[poster.image_url, poster.image2, poster.image3].filter(Boolean)} 
+          title={poster.title} 
+          description={poster.description}
+        />
       )}
 
       {/* Trust Badges Section */}
