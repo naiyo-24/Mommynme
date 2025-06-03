@@ -11,8 +11,14 @@ interface HeroSectionProps {
 
 const HeroSection = ({ images, title, description }: HeroSectionProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [featuredProduct] = useState({
+    name: "Crochet Sweater YT785",
+    description: "The perfect blend of warmth and style for the season",
+    price: 3599.99,
+    originalPrice: 4999.99,
+    image: "https://images.unsplash.com/photo-1584273143981-41c073dfe8f8"
+  });
   
-  // Auto-rotate slides
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % images.length);
@@ -33,117 +39,160 @@ const HeroSection = ({ images, title, description }: HeroSectionProps) => {
   };
 
   return (
-    <section className="relative h-[85vh] md:h-[90vh] overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50">
-      {/* Floating elements for youth appeal */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
-        <motion.div
-          initial={{ x: -100, y: -100, opacity: 0 }}
-          animate={{ x: -20, y: -30, opacity: 0.8 }}
-          transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-          className="absolute w-44 h-44 rounded-full bg-gradient-to-r from-pink-200 to-pink-300 blur-xl top-[10%] left-[5%] opacity-40"
-        />
-        <motion.div
-          initial={{ x: 100, y: 100, opacity: 0 }}
-          animate={{ x: 30, y: 50, opacity: 0.8 }}
-          transition={{ duration: 15, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 5 }}
-          className="absolute w-64 h-64 rounded-full bg-gradient-to-r from-purple-200 to-blue-200 blur-xl bottom-[20%] right-[8%] opacity-40"
-        />
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0.4 }}
-          animate={{ scale: 1.2, opacity: 0.8 }}
-          transition={{ duration: 8, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 2 }}
-          className="absolute w-32 h-32 rounded-full bg-gradient-to-r from-yellow-200 to-amber-200 blur-xl top-[40%] left-[20%] opacity-30"
-        />
+    <section className="relative h-[85vh] md:h-[90vh] overflow-hidden bg-[#FFF8E7]">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 right-0 w-2/3 h-full bg-[#FFD700]/10 rounded-bl-[100px]" />
       </div>
 
-      {/* Main image slider */}
-      <div className="relative h-full">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
+      <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full items-center">
+          {/* Left Content */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7 }}
+            className="z-10"
           >
-            <div className="relative h-full">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10" />
-              <img
-                src={image}
-                alt={`Hero slide ${index + 1}`}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = "https://placehold.co/1200x800";
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Content */}
-      <div className="absolute inset-0 z-20 flex flex-col justify-center">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="max-w-xl md:max-w-2xl lg:max-w-3xl">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-              className="bg-white/20 backdrop-blur-lg p-6 md:p-8 rounded-2xl shadow-xl"
+              transition={{ delay: 0.3, duration: 0.7 }}
+              className="text-5xl md:text-7xl font-bold mb-6"
             >
-              <motion.span
-                initial={{ opacity: 0, x: -20 }}
+              GET YOUR OWN
+              <br />
+              UNIQUE <span className="bg-[#FFD700] px-2">LOOK</span>
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.7 }}
+              className="text-xl text-gray-600 mb-8 max-w-lg"
+            >
+              {description}
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.7 }}
+              className="flex flex-wrap gap-4"
+            >
+              <Link
+                to="/products"
+                className="bg-black text-white px-8 py-4 rounded-full font-medium hover:bg-black/90 transition-all duration-300 flex items-center"
+              >
+                VIEW CATALOG
+              </Link>
+              <Link
+                to="/about"
+                className="bg-transparent border-2 border-black px-8 py-4 rounded-full font-medium hover:bg-black hover:text-white transition-all duration-300 flex items-center"
+              >
+                KNOW MORE
+              </Link>
+            </motion.div>
+
+            {/* Featured Product Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, duration: 0.7 }}
+              className="mt-12 bg-white rounded-2xl p-4 shadow-lg max-w-sm"
+            >
+              <div className="flex gap-4">
+                <img
+                  src={featuredProduct.image}
+                  alt={featuredProduct.name}
+                  className="w-32 h-32 object-cover rounded-xl"
+                />
+                <div>
+                  <h3 className="font-bold text-lg">{featuredProduct.name}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{featuredProduct.description}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold">₹{featuredProduct.price}</span>
+                    <span className="text-sm text-gray-500 line-through">₹{featuredProduct.originalPrice}</span>
+                  </div>
+                  <button className="mt-2 bg-[#FFD700] px-4 py-2 rounded-full text-sm font-medium hover:bg-[#FFD700]/90 transition-all duration-300">
+                    BUY NOW
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Content - Image Slider */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7 }}
+            className="relative h-full hidden lg:block"
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              {/* Product Highlight Card */}
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3, duration: 0.7 }}
-                className="inline-block px-4 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-full mb-4"
-              >
-                New Collection
-              </motion.span>
-              
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.7 }}
-                className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700"
+                className="absolute top-20 right-0 bg-white p-4 rounded-2xl shadow-lg z-20 w-48"
               >
-                {title}
-              </motion.h1>
-              
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
+                <div className="flex items-center justify-between mb-2">
+                  <img
+                    src="https://images.unsplash.com/photo-1618354691373-d8514fecafcb"
+                    alt="Product"
+                    className="w-10 h-10 object-cover rounded-lg"
+                  />
+                  <h4 className="font-bold">BRO GLOW</h4>
+                </div>
+                <p className="text-sm text-gray-600">The best model of this season</p>
+              </motion.div>
+
+              {/* Main Image */}
+              <div className="relative w-full h-[70vh] rounded-3xl overflow-hidden">
+                {images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${
+                      index === currentSlide ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`Slide ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Reviews Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.7 }}
-                className="text-lg text-slate-700 mb-6"
+                className="absolute bottom-20 right-10 bg-white p-4 rounded-2xl shadow-lg"
               >
-                {description}
-              </motion.p>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.7 }}
-                className="flex flex-wrap gap-4"
-              >
-                <Link
-                  to="/products"
-                  className="inline-flex items-center bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
-                >
-                  <span>Shop Now</span>
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-                
-                <Link
-                  to="/about"
-                  className="inline-flex items-center bg-white/70 hover:bg-white/90 text-slate-800 px-6 py-3 rounded-full font-medium border border-slate-200 transition-all duration-300 transform hover:scale-105 hover:shadow-md"
-                >
-                  <span>Learn More</span>
-                </Link>
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    {[1, 2, 3].map((i) => (
+                      <img
+                        key={i}
+                        src={`https://i.pravatar.cc/40?img=${i}`}
+                        alt={`Reviewer ${i}`}
+                        className="w-8 h-8 rounded-full border-2 border-white"
+                      />
+                    ))}
+                  </div>
+                  <span className="font-bold">150k+</span>
+                </div>
+                <p className="text-sm mt-1">Happy Customers</p>
               </motion.div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* Navigation controls */}
+      {/* Navigation Controls */}
       <div className="absolute bottom-8 left-0 right-0 z-20 flex justify-center items-center space-x-2">
         {images.map((_, index) => (
           <button
@@ -151,21 +200,21 @@ const HeroSection = ({ images, title, description }: HeroSectionProps) => {
             onClick={() => goToSlide(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
               index === currentSlide
-                ? "bg-white w-10"
-                : "bg-white/50 hover:bg-white/80"
+                ? "bg-black w-10"
+                : "bg-black/50 hover:bg-black/80"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>
 
-      {/* Arrow controls */}
+      {/* Arrow Controls */}
       <button
         onClick={prevSlide}
         className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/30 hover:bg-white/60 rounded-full p-2 backdrop-blur-sm transition-all duration-300"
         aria-label="Previous slide"
       >
-        <ChevronLeft className="w-6 h-6 text-slate-800" />
+        <ChevronLeft className="w-6 h-6 text-black" />
       </button>
       
       <button
@@ -173,7 +222,7 @@ const HeroSection = ({ images, title, description }: HeroSectionProps) => {
         className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/30 hover:bg-white/60 rounded-full p-2 backdrop-blur-sm transition-all duration-300"
         aria-label="Next slide"
       >
-        <ChevronRight className="w-6 h-6 text-slate-800" />
+        <ChevronRight className="w-6 h-6 text-black" />
       </button>
     </section>
   );
